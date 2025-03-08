@@ -1,0 +1,88 @@
+package com.example.mifinanza
+
+import android.os.Bundle
+import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.findNavController
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navController: NavController
+    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var navView: NavigationView
+    private lateinit var toolbar: Toolbar
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navView = findViewById(R.id.nav_view)
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        val toggle = ActionBarDrawerToggle(
+            this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        // Manejar selecciones del menú de navegación
+        navView.setNavigationItemSelectedListener { menuItem ->
+            val navController = findNavController(R.id.nav_host_fragment)
+            val currentDestination = navController.currentDestination?.id
+            when (menuItem.itemId) {
+                R.id.nav_ingresos -> {
+                    when (currentDestination) {
+                        R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_ingresoFragment)
+                        R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_ingresoFragment)
+                        R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_ingresoFragment)
+                    }
+                }
+                R.id.nav_egresos -> {
+                    when (currentDestination) {
+                        R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_egresoFragment)
+                        R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_egresoFragment)
+                        R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_egresoFragment)
+                    }
+                }
+                R.id.nav_partidas -> {
+                    when (currentDestination) {
+                        R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_listaPartidasFragment)
+                        R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_listaPartidasFragment)
+                        R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_listaPartidasFragment)
+                    }
+                }
+            }
+            menuItem.isChecked = true
+            drawerLayout.closeDrawers()
+            true
+        }
+
+    }
+    
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                drawerLayout.openDrawer(GravityCompat.START)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+}

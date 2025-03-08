@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tv_nombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nombre del Usuario"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/tv_resumen_ingresos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Resumen de Ingresos"
+        android:textSize="18sp"
+        android:paddingTop="10dp" />
+
+    <TextView
+        android:id="@+id/tv_resumen_egresos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Resumen de Egresos"
+        android:textSize="18sp"
+        android:paddingTop="10dp" />
+
+    <TextView
+        android:id="@+id/tv_prestamo_pendiente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Préstamo por Pagar"
+        android:textSize="18sp"
+        android:paddingTop="10dp" />
+
+</LinearLayout>
+

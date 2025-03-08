@@ -1,0 +1,133 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nuevo Prestamo"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre Prestamista"
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/et_prestamista"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Monto"
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/et_monto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:gravity="end"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tasa BCV"
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/et_tasa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:gravity="end"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tasa de interés (%)"
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/et_tasa_interes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:gravity="end"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+        
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fecha de préstamo"
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/et_fecha_prestamo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="(YYYY-MM-DD)"
+            android:focusable="false"
+            android:clickable="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+    
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Plazo en días"
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/et_plazo_dias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:gravity="end"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+     
+        <Button 
+            android:id="@+id/btn_registrar_prestamo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="GUARDAR"
+            android:textAllCaps="true"
+            android:backgroundTint="@color/purple_500" 
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp" />
+
+    </LinearLayout>
+</ScrollView>

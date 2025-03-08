@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_ingresos"
+        android:icon="@drawable/ic_ingresos"
+        android:title="Ingresos" />
+    <item
+        android:id="@+id/nav_egresos"
+        android:icon="@drawable/ic_egresos"
+        android:title="Egresos" />
+    <item
+        android:id="@+id/nav_movimientos"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Movimientos" />
+    <item
+        android:id="@+id/nav_partidas"
+        android:icon="@drawable/ic_partidas"
+        android:title="Gestionar partidas" />
+    <item
+        android:id="@+id/nav_prestamos"
+        android:icon="@drawable/ic_prestamo"
+        android:title="Gestionar partidas" />
+</menu>
+

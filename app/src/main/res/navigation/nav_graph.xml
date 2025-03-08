@@ -1,0 +1,70 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.mifinanza.MainFragment"
+        android:label="MainFragment"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_ingresoFragment"
+            app:destination="@id/ingresoFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_egresoFragment"
+            app:destination="@id/egresoFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_listaPartidasFragment"
+            app:destination="@id/listaPartidasFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ingresoFragment"
+        android:name="com.example.mifinanza.IngresoFragment"
+        android:label="IngresoFragment"
+        tools:layout="@layout/fragment_ingreso">
+        <action
+            android:id="@+id/action_ingresoFragment_to_egresoFragment"
+            app:destination="@id/egresoFragment" />
+        <action
+            android:id="@+id/action_ingresoFragment_to_listaPartidasFragment"
+            app:destination="@id/listaPartidasFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/egresoFragment"
+        android:name="com.example.mifinanza.EgresoFragment"
+        android:label="EgresoFragment"
+        tools:layout="@layout/fragment_egreso">
+        <action
+            android:id="@+id/action_egresoFragment_to_ingresoFragment"
+            app:destination="@id/ingresoFragment" />
+        <action
+            android:id="@+id/action_egresoFragment_to_listaPartidasFragment"
+            app:destination="@id/listaPartidasFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/listaPartidasFragment"
+        android:name="com.example.mifinanza.ListaPartidasFragment"
+        android:label="ListaPartidasFragment"
+        tools:layout="@layout/fragment_lista_partidas">
+        <action
+            android:id="@+id/action_listaPartidasFragment_to_agregarPartidaFragment"
+            app:destination="@id/agregarPartidaFragment" />
+        <action
+            android:id="@+id/action_listaPartidasFragment_to_ingresoFragment"
+            app:destination="@id/ingresoFragment" />
+        <action
+            android:id="@+id/action_listaPartidasFragment_to_egresoFragment"
+            app:destination="@id/egresoFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/agregarPartidaFragment"
+        android:name="com.example.mifinanza.AgregarPartidaFragment"
+        android:label="AgregarPartidaFragment"
+        tools:layout="@layout/fragment_agregar_partida" />
+
+</navigation>
