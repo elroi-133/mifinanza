@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -27,7 +26,8 @@
             android:text="Prestamo"
             android:textSize="14sp"
             android:textColor="@android:color/black" />
-         <Spinner
+
+        <Spinner
             android:id="@+id/spinner_prestamo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -35,6 +35,7 @@
             android:background="@android:drawable/btn_dropdown"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,7 +93,7 @@
             android:layout_height="wrap_content"
             android:text="GUARDAR"
             android:textAllCaps="true"
-            android:backgroundTint="@color/purple_500" 
+            android:backgroundTint="@color/purple_500"
             android:textColor="@android:color/white"
             android:layout_marginTop="16dp" />
 

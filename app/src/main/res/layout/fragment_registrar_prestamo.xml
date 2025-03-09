@@ -37,7 +37,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Monto"
+            android:text="Monto en divisa"
             android:textSize="14sp"
             android:textColor="@android:color/black" />
 
@@ -54,7 +54,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tasa BCV"
+            android:text="Tasa BCV de la divisa"
             android:textSize="14sp"
             android:textColor="@android:color/black" />
 
@@ -84,7 +84,7 @@
             android:gravity="end"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp" />
-        
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
             android:clickable="true"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp" />
-    
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -118,16 +118,25 @@
             android:gravity="end"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp" />
-     
-        <Button 
+
+        <Button
             android:id="@+id/btn_registrar_prestamo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="GUARDAR"
             android:textAllCaps="true"
-            android:backgroundTint="@color/purple_500" 
+            android:backgroundTint="@color/purple_500"
             android:textColor="@android:color/white"
             android:layout_marginTop="16dp" />
 
+        <Button
+            android:id="@+id/btn_volver_listado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="REGRESAR"
+            android:textAllCaps="true"
+            android:backgroundTint="@color/gray"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp" />
     </LinearLayout>
 </ScrollView>

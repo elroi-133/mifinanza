@@ -36,5 +36,15 @@
         android:textSize="18sp"
         android:paddingTop="10dp" />
 
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/barChartIngresos"
+        android:layout_width="match_parent"
+        android:layout_height="300dp" />
+
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/barChartEgresos"
+        android:layout_width="match_parent"
+        android:layout_height="300dp" />
+
 </LinearLayout>
 

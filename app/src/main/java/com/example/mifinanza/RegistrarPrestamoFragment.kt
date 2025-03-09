@@ -4,29 +4,35 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import java.util.Calendar
 
-class RegistrarPrestamoActivity : AppCompatActivity() {
+class RegistrarPrestamoFragment : Fragment() {
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var etFecha: EditText
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_registrar_prestamo)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_registrar_prestamo, container, false)
 
-        dbHelper = DatabaseHelper(this)
-        val etPrestamista = findViewById<EditText>(R.id.et_prestamista)
-        val etMonto = findViewById<EditText>(R.id.et_monto)
-        val etTasa = findViewById<EditText>(R.id.et_tasa)
-        val etTasaInteres = findViewById<EditText>(R.id.et_tasa_interes)
-        val etPlazoDias = findViewById<EditText>(R.id.et_plazo_dias)
-        val btnRegistrarPrestamo = findViewById<Button>(R.id.btn_registrar_prestamo)
-        etFecha = findViewById(R.id.et_fecha_prestamo)
+        dbHelper = DatabaseHelper(requireContext())
+        val etPrestamista = view.findViewById<EditText>(R.id.et_prestamista)
+        val etMonto = view.findViewById<EditText>(R.id.et_monto)
+        val etTasa = view.findViewById<EditText>(R.id.et_tasa)
+        val etTasaInteres = view.findViewById<EditText>(R.id.et_tasa_interes)
+        val etPlazoDias = view.findViewById<EditText>(R.id.et_plazo_dias)
+        val btnRegistrarPrestamo = view.findViewById<Button>(R.id.btn_registrar_prestamo)
+        val btnVolverListado = view.findViewById<Button>(R.id.btn_volver_listado)
+        etFecha = view.findViewById(R.id.et_fecha_prestamo)
         etFecha.setOnClickListener {
             showDatePicker()
         }
@@ -34,7 +40,9 @@ class RegistrarPrestamoActivity : AppCompatActivity() {
         addTextWatcher(etMonto)
         addTextWatcher(etTasa)
         addTextWatcher(etTasaInteres)
-
+        btnVolverListado.setOnClickListener {
+            findNavController().navigateUp()
+        }
         btnRegistrarPrestamo.setOnClickListener {
             val monto = parseFormattedValue(etMonto.text.toString())
             val tasa = parseFormattedValue(etTasa.text.toString())
@@ -59,22 +67,26 @@ class RegistrarPrestamoActivity : AppCompatActivity() {
                 etPlazoDias.text.clear()
                 etFecha.text.clear()
             } else {
-                Toast.makeText(this, "Por favor, completa todos los campos correctamente", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Por favor, completa todos los campos correctamente", Toast.LENGTH_SHORT).show()
             }
         }
+        return view
     }
-    private fun registrarPrestamo(
-        prestamista:String,
-        monto:Double,
-        tasa:Double,
-        tasaInteres:Double,
-        fechaPrestamo:String,
-        plazoDias:Int) {
-        dbHelper.registrarPrestamo(prestamista, monto, tasaInteres, fechaPrestamo, plazoDias, this)
 
-        dbHelper.registrarMovimiento(monto,tasa, StringBuilder("PRESTAMO de ").append(prestamista).toString(),fechaPrestamo, 1,2)
-        Toast.makeText(this, "Préstamo registrado", Toast.LENGTH_SHORT).show()
+    private fun registrarPrestamo(
+        prestamista: String,
+        monto: Double,
+        tasa: Double,
+        tasaInteres: Double,
+        fechaPrestamo: String,
+        plazoDias: Int
+    ) {
+        dbHelper.registrarPrestamo(prestamista, monto, tasaInteres, fechaPrestamo, plazoDias, requireContext())
+
+        dbHelper.registrarMovimiento((monto*tasa), tasa, StringBuilder("PRESTAMO de ").append(prestamista).toString(), fechaPrestamo, 1, 2)
+        Toast.makeText(requireContext(), "Préstamo registrado", Toast.LENGTH_SHORT).show()
     }
+
     private fun showDatePicker() {
         try {
             // Obtener la fecha actual
@@ -85,7 +97,7 @@ class RegistrarPrestamoActivity : AppCompatActivity() {
 
             // Crear el DatePickerDialog
             val datePickerDialog = DatePickerDialog(
-                this, // Usar el contexto de la actividad
+                requireContext(), // Usar el contexto del fragmento
                 { _, selectedYear, selectedMonth, selectedDay ->
                     // Formatear la fecha seleccionada como "YYYY-MM-DD"
                     val formattedDate = String.format(
@@ -106,7 +118,7 @@ class RegistrarPrestamoActivity : AppCompatActivity() {
             datePickerDialog.show()
         } catch (e: Exception) {
             // Capturar cualquier excepción y mostrar un mensaje de error
-            Toast.makeText(this, "Error al seleccionar la fecha: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Error al seleccionar la fecha: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -167,5 +179,4 @@ class RegistrarPrestamoActivity : AppCompatActivity() {
             null
         }
     }
-
 }

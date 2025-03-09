@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_mainFragment_to_listaMovimientoFragment"
             app:destination="@id/listaMovimientoFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_prestamosFragment"
+            app:destination="@id/prestamosFragment" />
     </fragment>
 
     <fragment
@@ -36,6 +39,9 @@
         <action
             android:id="@+id/action_ingresoFragment_to_listaMovimientoFragment"
             app:destination="@id/listaMovimientoFragment" />
+        <action
+            android:id="@+id/action_ingresoFragment_to_prestamosFragment"
+            app:destination="@id/prestamosFragment" />
     </fragment>
 
     <fragment
@@ -52,6 +58,9 @@
         <action
             android:id="@+id/action_egresoFragment_to_listaMovimientoFragment"
             app:destination="@id/listaMovimientoFragment" />
+        <action
+            android:id="@+id/action_egresoFragment_to_prestamosFragment"
+            app:destination="@id/prestamosFragment" />
     </fragment>
 
     <fragment
@@ -71,6 +80,9 @@
         <action
             android:id="@+id/action_listaPartidasFragment_to_listaMovimientoFragment"
             app:destination="@id/listaMovimientoFragment" />
+        <action
+            android:id="@+id/action_listaPartidasFragment_to_prestamosFragment"
+            app:destination="@id/prestamosFragment" />
     </fragment>
 
     <fragment
@@ -78,6 +90,7 @@
         android:name="com.example.mifinanza.AgregarPartidaFragment"
         android:label="AgregarPartidaFragment"
         tools:layout="@layout/fragment_agregar_partida" />
+
     <fragment
         android:id="@+id/listaMovimientoFragment"
         android:name="com.example.mifinanza.ListaMovimientoFragment"
@@ -92,7 +105,44 @@
         <action
             android:id="@+id/action_listaMovimientoFragment_to_egresoFragment"
             app:destination="@id/egresoFragment" />
+        <action
+            android:id="@+id/action_listaMovimientoFragment_to_prestamosFragment"
+            app:destination="@id/prestamosFragment" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/prestamosFragment"
+        android:name="com.example.mifinanza.PrestamosFragment"
+        android:label="PrestamosFragment"
+        tools:layout="@layout/fragment_prestamos">
+        <action
+            android:id="@+id/action_prestamosFragment_to_registrarPrestamoFragment"
+            app:destination="@id/registrarPrestamoFragment" />
+        <action
+            android:id="@+id/action_prestamosFragment_to_egresoFragment"
+            app:destination="@id/egresoFragment" />
+        <action
+            android:id="@+id/action_prestamosFragment_to_ingresoFragment"
+            app:destination="@id/ingresoFragment" />
+        <action
+            android:id="@+id/action_prestamosFragment_to_listaPartidasFragment"
+            app:destination="@id/listaPartidasFragment" />
+        <action
+            android:id="@+id/action_prestamosFragment_to_listaMovimientoFragment"
+            app:destination="@id/listaMovimientoFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrarPrestamoFragment"
+        android:name="com.example.mifinanza.RegistrarPrestamoFragment"
+        android:label="RegistrarPrestamoFragment"
+        tools:layout="@layout/fragment_registrar_prestamo" />
+
+    <fragment
+        android:id="@+id/registrarPagoPrestamoFragment"
+        android:name="com.example.mifinanza.RegistrarPagoPrestamoFragment"
+        android:label="RegistrarPagoPrestamoFragment"
+        tools:layout="@layout/fragment_registrar_pago_prestamo" />
 
 </navigation>

@@ -56,6 +56,7 @@ class AgregarPartidaFragment : Fragment() {
 
         btnRegresar.setOnClickListener {
             findNavController().navigateUp()
+            //findNavController().navigate(R.id.action_registrarPrestamoFragment_to_listaPrestamosFragment)
         }
 
         return view

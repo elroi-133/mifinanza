@@ -1,36 +1,40 @@
 package com.example.mifinanza
 
-import android.app.DatePickerDialog
 import android.app.AlarmManager
+import android.app.DatePickerDialog
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import java.util.Calendar
 
-class RegistrarPagoPrestamoActivity : AppCompatActivity() {
+class RegistrarPagoPrestamoFragment : Fragment() {
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var etFecha: EditText
     private lateinit var spinnerPrestamo: Spinner
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_registrar_pago_prestamo)
-        dbHelper = DatabaseHelper(this)
-        spinnerPrestamo = findViewById(R.id.spinner_prestamo)
 
-        val etMonto = findViewById<EditText>(R.id.et_monto)
-        val etTasa = findViewById<EditText>(R.id.et_tasa)
-        etFecha = findViewById(R.id.et_fecha)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_registrar_pago_prestamo, container, false)
+        dbHelper = DatabaseHelper(requireContext())
+        spinnerPrestamo = view.findViewById(R.id.spinner_prestamo)
+
+        val etMonto = view.findViewById<EditText>(R.id.et_monto)
+        val etTasa = view.findViewById<EditText>(R.id.et_tasa)
+        etFecha = view.findViewById(R.id.et_fecha)
         etFecha.setOnClickListener {
             showDatePicker()
         }
@@ -39,18 +43,14 @@ class RegistrarPagoPrestamoActivity : AppCompatActivity() {
         addTextWatcher(etTasa)
         loadPrestamo()
 
-        val btnRegistrarPago = findViewById<Button>(R.id.btn_registrar_pago_prestamo)
+        val btnRegistrarPago = view.findViewById<Button>(R.id.btn_registrar_pago_prestamo)
         btnRegistrarPago.setOnClickListener {
-            registrarPago(etMonto,etTasa)
+            registrarPago(etMonto, etTasa)
         }
-        /*ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }*/
+        return view
     }
 
-    fun registrarPago(etMonto: EditText,etTasa: EditText) {
+    fun registrarPago(etMonto: EditText, etTasa: EditText) {
         val prestamoId = spinnerPrestamo.selectedItemId.toInt()
         val monto = parseFormattedValue(etMonto.text.toString())
         val tasa = parseFormattedValue(etTasa.text.toString())
@@ -60,7 +60,7 @@ class RegistrarPagoPrestamoActivity : AppCompatActivity() {
         val partida = 2
         if (monto != null && tasa != null && fecha.isNotEmpty() && descripcion.isNotEmpty()) {
             // Guardar en la base de datos
-            dbHelper.registrarMovimiento((monto*-1), tasa, descripcion, fecha, tipo, partida)
+            dbHelper.registrarMovimiento((monto * -1), tasa, descripcion, fecha, tipo, partida)
         }
         // Calcular el saldo pendiente del préstamo
         val saldoPendiente = calcularSaldoPendiente(prestamoId)
@@ -78,7 +78,7 @@ class RegistrarPagoPrestamoActivity : AppCompatActivity() {
     }
 
     fun cancelarNotificacion(prestamoId: Int) {
-        val context = this // Obtén el contexto del fragmento
+        val context = requireContext() // Obtén el contexto del fragmento
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val intent = Intent(context, PrestamoNotificationReceiver::class.java)
@@ -102,7 +102,7 @@ class RegistrarPagoPrestamoActivity : AppCompatActivity() {
 
             // Crear el DatePickerDialog
             val datePickerDialog = DatePickerDialog(
-                this, // Usar el contexto de la actividad
+                requireContext(), // Usar el contexto del fragmento
                 { _, selectedYear, selectedMonth, selectedDay ->
                     // Formatear la fecha seleccionada como "YYYY-MM-DD"
                     val formattedDate = String.format(
@@ -123,7 +123,7 @@ class RegistrarPagoPrestamoActivity : AppCompatActivity() {
             datePickerDialog.show()
         } catch (e: Exception) {
             // Capturar cualquier excepción y mostrar un mensaje de error
-            Toast.makeText(this, "Error al seleccionar la fecha: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Error al seleccionar la fecha: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -187,8 +187,15 @@ class RegistrarPagoPrestamoActivity : AppCompatActivity() {
 
     private fun loadPrestamo() {
         val db = dbHelper.readableDatabase
-        val cursor = db.query(DatabaseHelper.TABLE_PRESTAMOS, arrayOf(DatabaseHelper.COLUMN_PRESTAMO_ID, DatabaseHelper.COLUMN_PRESTAMISTA),
-            "${DatabaseHelper.COLUMN_ESTADO} = ?", arrayOf("Activo"), null, null, null)
+        val cursor = db.query(
+            DatabaseHelper.TABLE_PRESTAMOS,
+            arrayOf(DatabaseHelper.COLUMN_PRESTAMO_ID, DatabaseHelper.COLUMN_PRESTAMISTA),
+            "${DatabaseHelper.COLUMN_ESTADO} = ?",
+            arrayOf("Activo"),
+            null,
+            null,
+            null
+        )
         val partidas = mutableListOf<String>()
         while (cursor.moveToNext()) {
             val nombre = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PRESTAMISTA))
@@ -197,7 +204,7 @@ class RegistrarPagoPrestamoActivity : AppCompatActivity() {
         cursor.close()
         db.close()
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, partidas)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, partidas)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerPrestamo.adapter = adapter
     }
