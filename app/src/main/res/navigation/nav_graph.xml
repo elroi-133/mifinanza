@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_mainFragment_to_listaPartidasFragment"
             app:destination="@id/listaPartidasFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_listaMovimientoFragment"
+            app:destination="@id/listaMovimientoFragment" />
     </fragment>
 
     <fragment
@@ -30,6 +33,9 @@
         <action
             android:id="@+id/action_ingresoFragment_to_listaPartidasFragment"
             app:destination="@id/listaPartidasFragment" />
+        <action
+            android:id="@+id/action_ingresoFragment_to_listaMovimientoFragment"
+            app:destination="@id/listaMovimientoFragment" />
     </fragment>
 
     <fragment
@@ -43,6 +49,9 @@
         <action
             android:id="@+id/action_egresoFragment_to_listaPartidasFragment"
             app:destination="@id/listaPartidasFragment" />
+        <action
+            android:id="@+id/action_egresoFragment_to_listaMovimientoFragment"
+            app:destination="@id/listaMovimientoFragment" />
     </fragment>
 
     <fragment
@@ -59,6 +68,9 @@
         <action
             android:id="@+id/action_listaPartidasFragment_to_egresoFragment"
             app:destination="@id/egresoFragment" />
+        <action
+            android:id="@+id/action_listaPartidasFragment_to_listaMovimientoFragment"
+            app:destination="@id/listaMovimientoFragment" />
     </fragment>
 
     <fragment
@@ -66,5 +78,21 @@
         android:name="com.example.mifinanza.AgregarPartidaFragment"
         android:label="AgregarPartidaFragment"
         tools:layout="@layout/fragment_agregar_partida" />
+    <fragment
+        android:id="@+id/listaMovimientoFragment"
+        android:name="com.example.mifinanza.ListaMovimientoFragment"
+        android:label="ListaMovimientoFragment"
+        tools:layout="@layout/fragment_lista_movimiento" >
+        <action
+            android:id="@+id/action_listaMovimientoFragment_to_listaPartidasFragment"
+            app:destination="@id/listaPartidasFragment" />
+        <action
+            android:id="@+id/action_listaMovimientoFragment_to_ingresoFragment"
+            app:destination="@id/ingresoFragment" />
+        <action
+            android:id="@+id/action_listaMovimientoFragment_to_egresoFragment"
+            app:destination="@id/egresoFragment" />
+
+    </fragment>
 
 </navigation>

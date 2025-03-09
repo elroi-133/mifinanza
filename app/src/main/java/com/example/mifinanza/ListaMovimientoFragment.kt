@@ -1,11 +1,13 @@
 package com.example.mifinanza
 
 import android.content.ContentValues
-import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
-import android.widget.ArrayAdapter
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
@@ -14,15 +16,13 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.FileOutputStream
 import java.io.InputStream
-// Importar la clase DatabaseHelper
-import com.example.mifinanza.DatabaseHelper
 
-class VerRegistrosActivity : AppCompatActivity() {
+class ListaMovimientoFragment : Fragment() {
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var listView: ListView
     private lateinit var adapter: SimpleAdapter
@@ -31,29 +31,29 @@ class VerRegistrosActivity : AppCompatActivity() {
         uri?.let { importRegistros(it) }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_ver_registros)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_lista_movimiento, container, false)
 
-        dbHelper = DatabaseHelper(this)
-        listView = findViewById(R.id.list_registros)
+        dbHelper = DatabaseHelper(requireContext())
+        listView = view.findViewById(R.id.list_registros)
 
-        // Cargar registros al iniciar la actividad
         loadRegistros()
 
-        // Configurar clic largo para editar/eliminar
-        listView.setOnItemLongClickListener { parent, view, position, id ->
+        listView.setOnItemLongClickListener { parent, _, position, _ ->
             val selectedItem = parent.getItemAtPosition(position) as Map<String, String>
             val registroId = selectedItem["id"]?.toInt()
             val registroDescripcion = selectedItem["descripcion"]
 
-            AlertDialog.Builder(this)
+            AlertDialog.Builder(requireContext())
                 .setTitle("Editar/Eliminar Registro")
                 .setMessage("¿Qué deseas hacer con el registro '$registroDescripcion'?")
-                .setPositiveButton("Editar") { dialog, which ->
+                .setPositiveButton("Editar") { _, _ ->
                     showEditDialog(registroId, selectedItem)
                 }
-                .setNegativeButton("Eliminar") { dialog, which ->
+                .setNegativeButton("Eliminar") { _, _ ->
                     deleteRegistro(registroId)
                 }
                 .setNeutralButton("Cancelar", null)
@@ -62,15 +62,15 @@ class VerRegistrosActivity : AppCompatActivity() {
             true
         }
 
-        // Botón para exportar registros
-        findViewById<Button>(R.id.btn_exportar).setOnClickListener {
+        view.findViewById<Button>(R.id.btn_exportar).setOnClickListener {
             exportarRegistros()
         }
 
-        // Botón para importar registros
-        findViewById<Button>(R.id.btn_importar).setOnClickListener {
+        view.findViewById<Button>(R.id.btn_importar).setOnClickListener {
             importFileLauncher.launch("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         }
+
+        return view
     }
 
     private fun loadRegistros() {
@@ -91,7 +91,7 @@ class VerRegistrosActivity : AppCompatActivity() {
         db.close()
 
         adapter = SimpleAdapter(
-            this,
+            requireContext(),
             registros,
             android.R.layout.simple_list_item_2,
             arrayOf("descripcion", "monto"),
@@ -130,13 +130,13 @@ class VerRegistrosActivity : AppCompatActivity() {
         cursor.close()
         db.close()
 
-        val filePath = getExternalFilesDir(null).toString() + "/registros_finanzas.xlsx"
+        val filePath = requireContext().getExternalFilesDir(null).toString() + "/registros_finanzas.xlsx"
         val fileOutputStream = FileOutputStream(filePath)
         workbook.write(fileOutputStream)
         fileOutputStream.close()
         workbook.close()
 
-        Toast.makeText(this, "Registros exportados a $filePath", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Registros exportados a $filePath", Toast.LENGTH_SHORT).show()
     }
 
     private fun showEditDialog(registroId: Int?, registro: Map<String, String>) {
@@ -147,17 +147,16 @@ class VerRegistrosActivity : AppCompatActivity() {
         val etFecha = dialogView.findViewById<EditText>(R.id.et_fecha)
         val spinnerPartida = dialogView.findViewById<Spinner>(R.id.spinner_partida)
 
-        // Cargar datos del registro
         etMonto.setText(registro["monto"])
         etTasa.setText(registro["tasa"])
         etDescripcion.setText(registro["descripcion"])
         etFecha.setText(registro["fecha"])
         loadPartidas(spinnerPartida, registro["tipo"]?.toInt() ?: 0)
 
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(requireContext())
             .setTitle("Editar Registro")
             .setView(dialogView)
-            .setPositiveButton("Guardar") { dialog, which ->
+            .setPositiveButton("Guardar") { _, _ ->
                 val nuevoMonto = etMonto.text.toString().toDoubleOrNull()
                 val nuevaTasa = etTasa.text.toString().toDoubleOrNull()
                 val nuevaDescripcion = etDescripcion.text.toString()
@@ -175,10 +174,10 @@ class VerRegistrosActivity : AppCompatActivity() {
                     }
                     db.update(DatabaseHelper.TABLE_NAME, values, "${DatabaseHelper.COLUMN_ID}=?", arrayOf(registroId.toString()))
                     db.close()
-                    Toast.makeText(this, "Registro actualizado", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Registro actualizado", Toast.LENGTH_SHORT).show()
                     loadRegistros()
                 } else {
-                    Toast.makeText(this, "Por favor, completa todos los campos correctamente", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Por favor, completa todos los campos correctamente", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("Cancelar", null)
@@ -190,7 +189,7 @@ class VerRegistrosActivity : AppCompatActivity() {
             val db = dbHelper.writableDatabase
             db.delete(DatabaseHelper.TABLE_NAME, "${DatabaseHelper.COLUMN_ID}=?", arrayOf(registroId.toString()))
             db.close()
-            Toast.makeText(this, "Registro eliminado", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Registro eliminado", Toast.LENGTH_SHORT).show()
             loadRegistros()
         }
     }
@@ -207,13 +206,13 @@ class VerRegistrosActivity : AppCompatActivity() {
         cursor.close()
         db.close()
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, partidas)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, partidas)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
     }
 
     private fun importRegistros(uri: Uri) {
-        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+        val inputStream: InputStream? = requireContext().contentResolver.openInputStream(uri)
         val workbook = WorkbookFactory.create(inputStream)
         val sheet = workbook.getSheetAt(0)
 
@@ -253,7 +252,7 @@ class VerRegistrosActivity : AppCompatActivity() {
         inputStream?.close()
         workbook.close()
 
-        Toast.makeText(this, "Registros importados", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Registros importados", Toast.LENGTH_SHORT).show()
         loadRegistros()
     }
 }

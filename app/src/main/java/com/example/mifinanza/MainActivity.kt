@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
                         R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_ingresoFragment)
                         R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_ingresoFragment)
                         R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_ingresoFragment)
+                        R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_ingresoFragment) // Añadido
                     }
                 }
                 R.id.nav_egresos -> {
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity() {
                         R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_egresoFragment)
                         R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_egresoFragment)
                         R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_egresoFragment)
+                        R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_egresoFragment) // Añadido
                     }
                 }
                 R.id.nav_partidas -> {
@@ -62,6 +64,15 @@ class MainActivity : AppCompatActivity() {
                         R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_listaPartidasFragment)
                         R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_listaPartidasFragment)
                         R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_listaPartidasFragment)
+                        R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_listaPartidasFragment) // Añadido
+                    }
+                }
+                R.id.nav_movimientos -> {
+                    when (currentDestination) {
+                        R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_listaMovimientoFragment)
+                        R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_listaMovimientoFragment)
+                        R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_listaMovimientoFragment)
+                        R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_listaMovimientoFragment)
                     }
                 }
             }
