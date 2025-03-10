@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_inicio"
-        android:icon="@drawable/ic_ingresos"
-        android:title="Ingresos" />
+        android:icon="@drawable/ic_inicio"
+        android:title="Inicio" />
     <item
         android:id="@+id/nav_ingresos"
         android:icon="@drawable/ic_ingresos"
@@ -24,6 +24,5 @@
         android:id="@+id/nav_prestamos"
         android:icon="@drawable/ic_prestamo"
         android:title="Gestionar prestamos" />
-
 </menu>
 

@@ -82,8 +82,7 @@ class RegistrarPrestamoFragment : Fragment() {
         plazoDias: Int
     ) {
         dbHelper.registrarPrestamo(prestamista, monto, tasaInteres, fechaPrestamo, plazoDias, requireContext())
-
-        dbHelper.registrarMovimiento((monto*tasa), tasa, StringBuilder("PRESTAMO de ").append(prestamista).toString(), fechaPrestamo, 1, 2)
+        dbHelper.registrarMovimiento((monto*tasa), tasa, StringBuilder("PRESTAMO de ").append(prestamista).toString(), fechaPrestamo, 1, 2,monto)
         Toast.makeText(requireContext(), "Préstamo registrado", Toast.LENGTH_SHORT).show()
     }
 

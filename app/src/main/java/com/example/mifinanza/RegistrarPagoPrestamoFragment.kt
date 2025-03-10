@@ -60,7 +60,7 @@ class RegistrarPagoPrestamoFragment : Fragment() {
         val partida = 2
         if (monto != null && tasa != null && fecha.isNotEmpty() && descripcion.isNotEmpty()) {
             // Guardar en la base de datos
-            dbHelper.registrarMovimiento((monto * -1), tasa, descripcion, fecha, tipo, partida)
+            dbHelper.registrarMovimiento((monto * -1), tasa, descripcion, fecha, tipo, partida,((monto * -1)/tasa))
         }
         // Calcular el saldo pendiente del préstamo
         val saldoPendiente = calcularSaldoPendiente(prestamoId)

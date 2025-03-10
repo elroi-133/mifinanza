@@ -23,6 +23,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 + "$COLUMN_FECHA DATE, "
                 + "$COLUMN_TIPO INTEGER, "
                 + "$COLUMN_PARTIDA INTEGER, "
+                + "$COLUMN_TOTAL DECIMAL(10, 2), "
                 + "FOREIGN KEY($COLUMN_PARTIDA) REFERENCES $TABLE_PARTIDAS($COLUMN_PARTIDA_ID))")
 
         // Crear tabla partidas (sin cambios)
@@ -62,10 +63,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     companion object {
-        private const val DATABASE_VERSION = 2 // Incrementa la versión de la base de datos
+        private const val DATABASE_VERSION = 3 // Incrementa la versión de la base de datos
         private const val DATABASE_NAME = "finanzas.db"
 
-        // Tabla ingresos_egresos (sin cambios)
         const val TABLE_NAME = "ingresos_egresos"
         const val COLUMN_ID = "id"
         const val COLUMN_MONTO = "monto"
@@ -74,14 +74,13 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COLUMN_FECHA = "fecha"
         const val COLUMN_TIPO = "tipo"
         const val COLUMN_PARTIDA = "partida"
+        const val COLUMN_TOTAL = "total"
 
-        // Tabla partidas (sin cambios)
         const val TABLE_PARTIDAS = "partidas"
         const val COLUMN_PARTIDA_ID = "id"
         const val COLUMN_PARTIDA_NOMBRE = "nombre"
         const val COLUMN_PARTIDA_TIPO = "tipo"
 
-        // Tabla prestamos
         const val TABLE_PRESTAMOS = "prestamos"
         const val COLUMN_PRESTAMO_ID = "id"
         const val COLUMN_PRESTAMISTA = "prestamista"
@@ -97,7 +96,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         descripcion: String,
         fecha: String,
         tipo: Int,
-        partida: Int
+        partida: Int,
+        total: Double = 0.0
     ) {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -107,6 +107,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put(DatabaseHelper.COLUMN_FECHA, fecha)
             put(DatabaseHelper.COLUMN_TIPO, tipo)
             put(DatabaseHelper.COLUMN_PARTIDA, partida)
+            put(DatabaseHelper.COLUMN_TOTAL, total)
         }
         db.insert(DatabaseHelper.TABLE_NAME, null, values)
         db.close()

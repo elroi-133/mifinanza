@@ -108,8 +108,14 @@ class ListaPartidasFragment : Fragment() {
         while (cursor.moveToNext()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA_ID)).toString()
             val nombre = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA_NOMBRE))
-            val tipo = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA_TIPO)).toString()
-            partidas.add(mapOf("id" to id, "nombre" to nombre, "tipo" to tipo))
+            val tipo = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA_TIPO))
+            val tipoTexto = when (tipo) {
+                0 -> "Egreso"
+                1 -> "Ingreso"
+                2 -> "Préstamo"
+                else -> "Desconocido"
+            }
+            partidas.add(mapOf("id" to id,"nombre" to nombre, "tipo" to tipoTexto))
         }
         cursor.close()
         db.close()

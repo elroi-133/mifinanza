@@ -56,9 +56,11 @@ class EgresoFragment : Fragment() {
         val descripcion = etDescripcion.text.toString()
         val fecha = etFecha.text.toString()
         val tipo = 0 // Tipo es 0 para egresos
-        val partida = spinnerPartida.selectedItemId.toInt()
+       // val partida = spinnerPartida.selectedItemId.toInt()
+        val partidaSeleccionada = spinnerPartida.selectedItem as Partida
+        val partida = partidaSeleccionada.id
         if (monto != null && tasa != null && fecha.isNotEmpty() && descripcion.isNotEmpty()) {
-            dbHelper.registrarMovimiento((monto * -1), tasa, descripcion, fecha, tipo, partida)
+            dbHelper.registrarMovimiento((monto * -1), tasa, descripcion, fecha, tipo, partida, ((monto * -1)/tasa))
             Toast.makeText(requireContext(), "Egreso guardado", Toast.LENGTH_SHORT).show()
             etMonto.text.clear()
             etTasa.text.clear()
@@ -139,10 +141,11 @@ class EgresoFragment : Fragment() {
         val db = dbHelper.readableDatabase
         val cursor = db.query(DatabaseHelper.TABLE_PARTIDAS, arrayOf(DatabaseHelper.COLUMN_PARTIDA_ID, DatabaseHelper.COLUMN_PARTIDA_NOMBRE),
             "${DatabaseHelper.COLUMN_PARTIDA_TIPO} = ?", arrayOf(tipo.toString()), null, null, null)
-        val partidas = mutableListOf<String>()
+        val partidas = mutableListOf<Partida>()
         while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA_ID))
             val nombre = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA_NOMBRE))
-            partidas.add(nombre)
+            partidas.add(Partida(id, nombre))
         }
         cursor.close()
         db.close()

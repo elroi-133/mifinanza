@@ -43,6 +43,15 @@ class MainActivity : AppCompatActivity() {
             val navController = findNavController(R.id.nav_host_fragment)
             val currentDestination = navController.currentDestination?.id
             when (menuItem.itemId) {
+                R.id.nav_inicio -> {
+                    when (currentDestination) {
+                        R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_mainFragment)
+                        R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_mainFragment)
+                        R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_mainFragment)
+                        R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_mainFragment)
+                        R.id.prestamosFragment -> navController.navigate(R.id.action_prestamosFragment_to_mainFragment)
+                    }
+                }
                 R.id.nav_ingresos -> {
                     when (currentDestination) {
                         R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_ingresoFragment)

@@ -34,15 +34,21 @@ class MainFragment : Fragment() {
         val tvResumenEgresos: TextView = view.findViewById(R.id.tv_resumen_egresos)
         val tvPrestamoPendiente: TextView = view.findViewById(R.id.tv_prestamo_pendiente)
 
-        tvNombre.text = "Roissmer"
-        tvResumenIngresos.text = "Ingresos: $1000"
-        tvResumenEgresos.text = "Egresos: $500"
-        tvPrestamoPendiente.text = "Préstamo por Pagar: $2000"
+        val dbHelper = DatabaseHelper(requireContext()) // Inicializa tu DatabaseHelper
+
+        val totalIngresos = calcularTotalIngresos(dbHelper)
+        val totalEgresos = calcularTotalEgresos(dbHelper)
+        val montoTotalPrestamos = calcularMontoTotalPrestamos(dbHelper)
+
+        tvNombre.text = "RESUMEN DE MIS FINANZAS"
+        tvResumenIngresos.text = "Ingresos: $totalIngresos"
+        tvResumenEgresos.text = "Egresos: $totalEgresos"
+        tvPrestamoPendiente.text = "Préstamo por Pagar: $montoTotalPrestamos"
+
         // Dentro de tu Fragment o Activity
         val barChartIngresos = view.findViewById<BarChart>(R.id.barChartIngresos) // Asegúrate de tener un BarChart para ingresos
         val barChartEgresos = view.findViewById<BarChart>(R.id.barChartEgresos) // Asegúrate de tener un BarChart para egresos
 
-        val dbHelper = DatabaseHelper(requireContext()) // Inicializa tu DatabaseHelper
         val calendario = Calendar.getInstance()
         val mesActual = calendario.get(Calendar.MONTH) + 1 // Enero es 0
         val anioActual = calendario.get(Calendar.YEAR)
@@ -52,28 +58,52 @@ class MainFragment : Fragment() {
 
 // Gráfico de ingresos
         val datosIngresos = obtenerDatosGrafica(dbHelper, 1, mesActual, anioActual, mesAnterior, anioAnterior)
-        val barDataIngresos = prepararDatosGraficaBarras(datosIngresos)
-
+        println("Datos Ingresos: $datosIngresos")
+        val barDataIngresos = prepararDatosGraficaBarras(datosIngresos, barChartIngresos)
         barChartIngresos.data = barDataIngresos
-        barChartIngresos.xAxis.valueFormatter = IndexAxisValueFormatter(datosIngresos.keys)
-        barChartIngresos.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        barChartIngresos.description.text = "Ingresos por Partida"
-        barChartIngresos.animateY(1000)
         barChartIngresos.groupBars(-0.5f, 0.35f, 0f) // Agrupar las barras
         barChartIngresos.invalidate()
-
 // Gráfico de egresos
         val datosEgresos = obtenerDatosGrafica(dbHelper, 0, mesActual, anioActual, mesAnterior, anioAnterior)
-        val barDataEgresos = prepararDatosGraficaBarras(datosEgresos)
-
+        println("Datos Egresos: $datosEgresos")
+        val barDataEgresos = prepararDatosGraficaBarras(datosEgresos, barChartEgresos) // Pasa barChartEgresos
         barChartEgresos.data = barDataEgresos
-        barChartEgresos.xAxis.valueFormatter = IndexAxisValueFormatter(datosEgresos.keys)
-        barChartEgresos.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        barChartEgresos.description.text = "Egresos por Partida"
-        barChartEgresos.animateY(1000)
         barChartEgresos.groupBars(-0.5f, 0.35f, 0f) // Agrupar las barras
         barChartEgresos.invalidate()
         return view
+    }
+    fun calcularMontoTotalPrestamos(dbHelper: DatabaseHelper): Double {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery("SELECT SUM(${DatabaseHelper.COLUMN_MONTO_PRESTAMO}) FROM ${DatabaseHelper.TABLE_PRESTAMOS} WHERE ${DatabaseHelper.COLUMN_ESTADO} = 'Activo'", null)
+        var totalPrestamos = 0.0
+        if (cursor.moveToFirst()) {
+            totalPrestamos = cursor.getDouble(0)
+        }
+        cursor.close()
+        db.close()
+        return totalPrestamos
+    }
+    fun calcularTotalEgresos(dbHelper: DatabaseHelper): Double {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery("SELECT SUM(${DatabaseHelper.COLUMN_TOTAL}) FROM ${DatabaseHelper.TABLE_NAME} WHERE ${DatabaseHelper.COLUMN_TIPO} = 0", null)
+        var totalEgresos = 0.0
+        if (cursor.moveToFirst()) {
+            totalEgresos = cursor.getDouble(0)
+        }
+        cursor.close()
+        db.close()
+        return totalEgresos
+    }
+    fun calcularTotalIngresos(dbHelper: DatabaseHelper): Double {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery("SELECT SUM(${DatabaseHelper.COLUMN_TOTAL}) FROM ${DatabaseHelper.TABLE_NAME} WHERE ${DatabaseHelper.COLUMN_TIPO} = 1", null)
+        var totalIngresos = 0.0
+        if (cursor.moveToFirst()) {
+            totalIngresos = cursor.getDouble(0)
+        }
+        cursor.close()
+        db.close()
+        return totalIngresos
     }
     fun obtenerDatosGrafica(dbHelper: DatabaseHelper, tipo: Int, mesActual: Int, anioActual: Int, mesAnterior: Int, anioAnterior: Int): Map<String, Pair<Double, Double>> {
 
@@ -87,14 +117,15 @@ class MainFragment : Fragment() {
             partidas[cursorPartidas.getInt(0)] = cursorPartidas.getString(1)
         }
         cursorPartidas.close()
-
+        println("Las Partidas: $partidas")
         // Obtener datos de ingresos/egresos por partida y mes
-        val cursorDatos = db.query(DatabaseHelper.TABLE_NAME, arrayOf(DatabaseHelper.COLUMN_PARTIDA, "SUM(${DatabaseHelper.COLUMN_MONTO})", "strftime('%m', ${DatabaseHelper.COLUMN_FECHA})", "strftime('%Y', ${DatabaseHelper.COLUMN_FECHA})"), "${DatabaseHelper.COLUMN_TIPO} = ? AND strftime('%m', ${DatabaseHelper.COLUMN_FECHA}) IN (?, ?) AND strftime('%Y', ${DatabaseHelper.COLUMN_FECHA}) IN (?, ?)", arrayOf(tipo.toString(), String.format("%02d", mesActual), String.format("%02d", mesAnterior), anioActual.toString(), anioAnterior.toString()), "${DatabaseHelper.COLUMN_PARTIDA}, strftime('%m', ${DatabaseHelper.COLUMN_FECHA})", null, null)
+        val cursorDatos = db.query(DatabaseHelper.TABLE_NAME, arrayOf(DatabaseHelper.COLUMN_PARTIDA, "SUM(${DatabaseHelper.COLUMN_TOTAL})", "strftime('%m', ${DatabaseHelper.COLUMN_FECHA})", "strftime('%Y', ${DatabaseHelper.COLUMN_FECHA})"), "${DatabaseHelper.COLUMN_TIPO} = ? AND strftime('%m', ${DatabaseHelper.COLUMN_FECHA}) IN (?, ?) AND strftime('%Y', ${DatabaseHelper.COLUMN_FECHA}) IN (?, ?)", arrayOf(tipo.toString(), String.format("%02d", mesActual), String.format("%02d", mesAnterior), anioActual.toString(), anioAnterior.toString()), "${DatabaseHelper.COLUMN_PARTIDA}, strftime('%m', ${DatabaseHelper.COLUMN_FECHA})", null, null)
 
         while (cursorDatos.moveToNext()) {
-            val partidaId = cursorDatos.getInt(0)
-            val monto = cursorDatos.getDouble(1)
-            val mes = cursorDatos.getString(2).toInt()
+            val partidaId = cursorDatos.getInt(cursorDatos.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA))
+            val monto = cursorDatos.getDouble(cursorDatos.getColumnIndexOrThrow("SUM(${DatabaseHelper.COLUMN_TOTAL})"))
+            val mesString = cursorDatos.getString(cursorDatos.getColumnIndexOrThrow("strftime('%m', ${DatabaseHelper.COLUMN_FECHA})"))
+            val mes = mesString.toInt() // Convertir mes a Int
             val partidaNombre = partidas[partidaId] ?: "Desconocido"
 
             if (mes == mesActual) {
@@ -109,7 +140,7 @@ class MainFragment : Fragment() {
         return datos
     }
 
-    fun prepararDatosGraficaBarras(datos: Map<String, Pair<Double, Double>>): BarData {
+    fun prepararDatosGraficaBarras(datos: Map<String, Pair<Double, Double>>, barChart: BarChart): BarData {
         val entriesMesActual = ArrayList<BarEntry>()
         val entriesMesAnterior = ArrayList<BarEntry>()
         val nombresPartidas = ArrayList<String>()
@@ -121,7 +152,7 @@ class MainFragment : Fragment() {
             nombresPartidas.add(nombrePartida)
             index++
         }
-
+        println("Nombres Partidas: $nombresPartidas")
         val dataSetMesActual = BarDataSet(entriesMesActual, "Mes Actual")
         val dataSetMesAnterior = BarDataSet(entriesMesAnterior, "Mes Anterior")
 
@@ -131,6 +162,14 @@ class MainFragment : Fragment() {
 
         val barData = BarData(dataSetMesActual, dataSetMesAnterior)
         barData.barWidth = 0.35f // Ajustar el ancho de las barras
+
+        // Configurar el eje X
+        val xAxis = barChart.xAxis
+        xAxis.valueFormatter = IndexAxisValueFormatter(nombresPartidas)
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.granularity = 1f
+        xAxis.setCenterAxisLabels(true)
+
         return barData
     }
 }

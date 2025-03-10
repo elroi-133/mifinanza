@@ -31,6 +31,9 @@
         android:label="IngresoFragment"
         tools:layout="@layout/fragment_ingreso">
         <action
+            android:id="@+id/action_ingresoFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
             android:id="@+id/action_ingresoFragment_to_egresoFragment"
             app:destination="@id/egresoFragment" />
         <action
@@ -50,6 +53,9 @@
         android:label="EgresoFragment"
         tools:layout="@layout/fragment_egreso">
         <action
+            android:id="@+id/action_egresoFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
             android:id="@+id/action_egresoFragment_to_ingresoFragment"
             app:destination="@id/ingresoFragment" />
         <action
@@ -68,6 +74,9 @@
         android:name="com.example.mifinanza.ListaPartidasFragment"
         android:label="ListaPartidasFragment"
         tools:layout="@layout/fragment_lista_partidas">
+        <action
+            android:id="@+id/action_listaPartidasFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
         <action
             android:id="@+id/action_listaPartidasFragment_to_agregarPartidaFragment"
             app:destination="@id/agregarPartidaFragment" />
@@ -97,6 +106,9 @@
         android:label="ListaMovimientoFragment"
         tools:layout="@layout/fragment_lista_movimiento" >
         <action
+            android:id="@+id/action_listaMovimientoFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
             android:id="@+id/action_listaMovimientoFragment_to_listaPartidasFragment"
             app:destination="@id/listaPartidasFragment" />
         <action
@@ -116,6 +128,9 @@
         android:name="com.example.mifinanza.PrestamosFragment"
         android:label="PrestamosFragment"
         tools:layout="@layout/fragment_prestamos">
+        <action
+            android:id="@+id/action_prestamosFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
         <action
             android:id="@+id/action_prestamosFragment_to_registrarPrestamoFragment"
             app:destination="@id/registrarPrestamoFragment" />

@@ -51,10 +51,12 @@ class IngresoFragment : Fragment() {
             val descripcion = etDescripcion.text.toString()
             val fecha = etFecha.text.toString()
             val tipo = 1 // Tipo es 1 para ingresos
-            val partida = spinnerPartida.selectedItemId.toInt()
+           // val partida = spinnerPartida.selectedItemId.toInt()
+            val partidaSeleccionada = spinnerPartida.selectedItem as Partida
+            val partida = partidaSeleccionada.id
 
             if (monto != null && tasa != null && fecha.isNotEmpty() && descripcion.isNotEmpty()) {
-                dbHelper.registrarMovimiento(monto, tasa, descripcion, fecha, tipo, partida)
+                dbHelper.registrarMovimiento(monto, tasa, descripcion, fecha, tipo, partida,(monto/tasa))
                 Toast.makeText(requireContext(), "Ingreso guardado", Toast.LENGTH_SHORT).show()
                 etMonto.text.clear()
                 etTasa.text.clear()
@@ -138,10 +140,11 @@ class IngresoFragment : Fragment() {
         val db = dbHelper.readableDatabase
         val cursor = db.query(DatabaseHelper.TABLE_PARTIDAS, arrayOf(DatabaseHelper.COLUMN_PARTIDA_ID, DatabaseHelper.COLUMN_PARTIDA_NOMBRE),
             "${DatabaseHelper.COLUMN_PARTIDA_TIPO} = ?", arrayOf(tipo.toString()), null, null, null)
-        val partidas = mutableListOf<String>()
+        val partidas = mutableListOf<Partida>()
         while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA_ID))
             val nombre = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA_NOMBRE))
-            partidas.add(nombre)
+            partidas.add(Partida(id, nombre))
         }
         cursor.close()
         db.close()
@@ -149,5 +152,6 @@ class IngresoFragment : Fragment() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerPartida.adapter = adapter
     }
+
 }
 

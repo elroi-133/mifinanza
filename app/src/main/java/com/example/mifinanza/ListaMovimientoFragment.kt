@@ -75,7 +75,7 @@ class ListaMovimientoFragment : Fragment() {
 
     private fun loadRegistros() {
         val db = dbHelper.readableDatabase
-        val cursor = db.query(DatabaseHelper.TABLE_NAME, null, null, null, null, null, null)
+        val cursor = db.query(DatabaseHelper.TABLE_NAME, null, null, null, null, null, "${DatabaseHelper.COLUMN_FECHA} DESC")
         val registros = mutableListOf<Map<String, String>>()
         while (cursor.moveToNext()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID)).toString()
@@ -90,16 +90,28 @@ class ListaMovimientoFragment : Fragment() {
         cursor.close()
         db.close()
 
+        setupListView(registros)
+    }
+    private fun setupListView(registros: List<Map<String, String>>) {
+        val registrosConcatenados = registros.map { registro ->
+            mapOf(
+                "registroConcatenado" to "Descripción: ${registro["descripcion"]}\n" +
+                        "Monto: ${registro["monto"]}\n" +
+                        "Fecha: ${registro["fecha"]}\n" +
+                        "Tipo: ${registro["tipo"]}\n" +
+                        "Partida: ${registro["partida"]}"
+            )
+        }
+
         adapter = SimpleAdapter(
             requireContext(),
-            registros,
-            android.R.layout.simple_list_item_2,
-            arrayOf("descripcion", "monto"),
-            intArrayOf(android.R.id.text1, android.R.id.text2)
+            registrosConcatenados,
+            android.R.layout.simple_list_item_1, // Usamos simple_list_item_1
+            arrayOf("registroConcatenado"),
+            intArrayOf(android.R.id.text1)
         )
         listView.adapter = adapter
     }
-
     private fun exportarRegistros() {
         val db = dbHelper.readableDatabase
         val cursor = db.query(DatabaseHelper.TABLE_NAME, null, null, null, null, null, null)
