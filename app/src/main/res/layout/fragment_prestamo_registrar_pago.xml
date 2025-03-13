@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -15,7 +14,7 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nuevo Egresos"
+            android:text="Registrar pago prestamo"
             android:textSize="24sp"
             android:gravity="center"
             android:layout_gravity="center"
@@ -24,11 +23,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Partida"
+            android:text="Prestamo"
             android:textSize="14sp"
             android:textColor="@android:color/black" />
+
         <Spinner
-            android:id="@+id/spinner_partida"
+            android:id="@+id/spinner_prestamo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:prompt="@string/select_partida"
@@ -42,6 +42,7 @@
             android:text="Monto"
             android:textSize="14sp"
             android:textColor="@android:color/black" />
+
         <EditText
             android:id="@+id/et_monto"
             android:layout_width="match_parent"
@@ -58,6 +59,7 @@
             android:text="Tasa BCV"
             android:textSize="14sp"
             android:textColor="@android:color/black" />
+
         <EditText
             android:id="@+id/et_tasa"
             android:layout_width="match_parent"
@@ -71,22 +73,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Descripción"
-            android:textSize="14sp"
-            android:textColor="@android:color/black" />
-        <EditText
-            android:id="@+id/et_descripcion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="Fecha"
             android:textSize="14sp"
             android:textColor="@android:color/black" />
+
         <EditText
             android:id="@+id/et_fecha"
             android:layout_width="match_parent"
@@ -98,15 +88,23 @@
             android:layout_marginBottom="8dp" />
 
         <Button
-            android:id="@+id/btn_guardar"
+            android:id="@+id/btn_registrar_pago_prestamo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="GUARDAR"
             android:textAllCaps="true"
-            android:backgroundTint="@color/purple_500" 
+            android:backgroundTint="@color/purple_500"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp" />
+        <Button
+            android:id="@+id/btn_volver_listadoPrestamo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="REGRESAR"
+            android:textAllCaps="true"
+            android:backgroundTint="@color/gray"
             android:textColor="@android:color/white"
             android:layout_marginTop="16dp" />
 
     </LinearLayout>
 </ScrollView>
-

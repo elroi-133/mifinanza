@@ -1,90 +1,117 @@
 package com.example.mifinanza
 
+import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Spinner
 import android.widget.Toast
-import android.widget.ArrayAdapter
-import android.text.Editable
-import android.text.TextWatcher
-import android.app.DatePickerDialog
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import java.util.Calendar
 
-// Importar la clase DatabaseHelper
-
-class IngresoFragment : Fragment() {
+class PrestamoRegistrarFragment : Fragment() {
     private lateinit var dbHelper: DatabaseHelper
-    private lateinit var spinnerPartida: Spinner
     private lateinit var etFecha: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_ingreso, container, false)
+        val view = inflater.inflate(R.layout.fragment_prestamo_registrar, container, false)
 
         dbHelper = DatabaseHelper(requireContext())
-        spinnerPartida = view.findViewById(R.id.spinner_partida)
-
+        val etPrestamista = view.findViewById<EditText>(R.id.et_prestamista)
         val etMonto = view.findViewById<EditText>(R.id.et_monto)
         val etTasa = view.findViewById<EditText>(R.id.et_tasa)
-        val etDescripcion = view.findViewById<EditText>(R.id.et_descripcion)
-        val btnGuardar = view.findViewById<Button>(R.id.btn_guardar)
-        etFecha = view.findViewById(R.id.et_fecha)
-
+        val etTasaInteres = view.findViewById<EditText>(R.id.et_tasa_interes)
+        val etPlazoDias = view.findViewById<EditText>(R.id.et_plazo_dias)
+        val btnRegistrarPrestamo = view.findViewById<Button>(R.id.btn_registrar_prestamo)
+        val btnVolverListado = view.findViewById<Button>(R.id.btn_volver_listado)
+        etFecha = view.findViewById(R.id.et_fecha_prestamo)
         etFecha.setOnClickListener {
             showDatePicker()
         }
-
+        // Agregar TextWatcher para formatear el monto y la tasa
         addTextWatcher(etMonto)
         addTextWatcher(etTasa)
-        loadPartidasIngresos()
-
-        btnGuardar.setOnClickListener {
+        addTextWatcher(etTasaInteres)
+        btnVolverListado.setOnClickListener {
+            findNavController().navigateUp()
+        }
+        btnRegistrarPrestamo.setOnClickListener {
             val monto = parseFormattedValue(etMonto.text.toString())
             val tasa = parseFormattedValue(etTasa.text.toString())
-            val descripcion = etDescripcion.text.toString()
+            val tasaInteres = parseFormattedValue(etTasaInteres.text.toString())
             val fecha = etFecha.text.toString()
-            val tipo = 1 // Tipo es 1 para ingresos
-           // val partida = spinnerPartida.selectedItemId.toInt()
-            val partidaSeleccionada = spinnerPartida.selectedItem as Partida
-            val partida = partidaSeleccionada.id
-
-            if (monto != null && tasa != null && fecha.isNotEmpty() && descripcion.isNotEmpty()) {
-                dbHelper.registrarMovimiento(monto, tasa, descripcion, fecha, tipo, partida,(monto/tasa))
-                Toast.makeText(requireContext(), "Ingreso guardado", Toast.LENGTH_SHORT).show()
+            val plazoDias = parseFormattedValue(etPlazoDias.text.toString())
+            val prestamista = etPrestamista.text.toString()
+            if (monto != null && tasa != null && tasaInteres != null && fecha.isNotEmpty() && prestamista.isNotEmpty() && plazoDias != null) {
+                registrarPrestamo(
+                    prestamista,
+                    monto,
+                    tasa,
+                    tasaInteres,
+                    fecha,
+                    plazoDias.toInt()
+                )
+                // Limpiar campos después de guardar
                 etMonto.text.clear()
                 etTasa.text.clear()
-                etDescripcion.text.clear()
+                etPrestamista.text.clear()
+                etTasaInteres.text.clear()
+                etPlazoDias.text.clear()
                 etFecha.text.clear()
             } else {
                 Toast.makeText(requireContext(), "Por favor, completa todos los campos correctamente", Toast.LENGTH_SHORT).show()
             }
         }
-
         return view
+    }
+
+    private fun registrarPrestamo(
+        prestamista: String,
+        monto: Double,
+        tasa: Double,
+        tasaInteres: Double,
+        fechaPrestamo: String,
+        plazoDias: Int
+    ) {
+        val tipo = 1 // Tipo es 1 para ingresos
+        val partida = dbHelper.obtenerIdPartida( "Prestamos", tipo)
+        if (partida != null) {
+            dbHelper.registrarPrestamo(prestamista, monto, tasaInteres, fechaPrestamo, plazoDias, requireContext())
+            dbHelper.registrarMovimiento((monto * tasa), tasa, StringBuilder("PRESTAMO = ").append(prestamista).toString(), fechaPrestamo, tipo, partida, monto)
+            Toast.makeText(requireContext(), "Préstamo registrado con exito", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(requireContext(), "Error: No se encontró la partida 'Prestamos'", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun showDatePicker() {
         try {
+            // Obtener la fecha actual
             val calendar = Calendar.getInstance()
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
             val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            // Crear el DatePickerDialog
             val datePickerDialog = DatePickerDialog(
-                requireContext(),
+                requireContext(), // Usar el contexto del fragmento
                 { _, selectedYear, selectedMonth, selectedDay ->
+                    // Formatear la fecha seleccionada como "YYYY-MM-DD"
                     val formattedDate = String.format(
                         "%04d-%02d-%02d",
                         selectedYear,
-                        selectedMonth + 1,
+                        selectedMonth + 1, // Los meses comienzan desde 0
                         selectedDay
                     )
+                    // Asignar la fecha formateada al EditText
                     etFecha.setText(formattedDate)
                 },
                 year,
@@ -92,36 +119,58 @@ class IngresoFragment : Fragment() {
                 day
             )
             datePickerDialog.datePicker.maxDate = calendar.timeInMillis
+            // Mostrar el DatePickerDialog
             datePickerDialog.show()
         } catch (e: Exception) {
+            // Capturar cualquier excepción y mostrar un mensaje de error
             Toast.makeText(requireContext(), "Error al seleccionar la fecha: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun addTextWatcher(editText: EditText) {
+        // Establecer el valor predeterminado
         editText.setText("0,00")
-        editText.gravity = android.view.Gravity.END
-        editText.setSelection(editText.text.length)
+        editText.gravity = android.view.Gravity.END // Alinear el texto a la derecha
+        editText.setSelection(editText.text.length) // Mover el cursor al final
+
         editText.addTextChangedListener(object : TextWatcher {
             private var isFormatting = false
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
             override fun afterTextChanged(s: Editable?) {
                 if (isFormatting) return
                 isFormatting = true
+
+                // Obtener el texto actual
                 val originalText = s.toString()
+
+                // Eliminar caracteres no numéricos
                 val cleanString = originalText.replace("[^0-9]".toRegex(), "")
+
+                // Asegurarse de que el valor tenga al menos 3 dígitos (para los decimales)
                 val paddedString = cleanString.padStart(3, '0')
+
+                // Separar parte entera y decimal
                 var parteEntera = paddedString.dropLast(2)
                 val parteDecimal = paddedString.takeLast(2)
+
+                // Eliminar ceros a la izquierda de la parte entera
                 parteEntera = parteEntera.trimStart('0')
                 if (parteEntera.isEmpty()) {
                     parteEntera = "0"
                 }
+
+                // Formatear el valor con separadores de miles
                 val formattedEntera = parteEntera.reversed().chunked(3).joinToString(".").reversed()
                 val formattedText = "$formattedEntera,$parteDecimal"
+
+                // Actualizar el texto en el EditText
                 editText.setText(formattedText)
                 editText.setSelection(formattedText.length) // Mover el cursor al final
+
                 isFormatting = false
             }
         })
@@ -135,13 +184,4 @@ class IngresoFragment : Fragment() {
             null
         }
     }
-
-    private fun loadPartidasIngresos() {
-        val partidas = dbHelper.loadPartidas(1)
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, partidas)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerPartida.adapter = adapter
-    }
-
 }
-

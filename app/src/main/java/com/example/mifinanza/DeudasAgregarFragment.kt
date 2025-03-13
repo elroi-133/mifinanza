@@ -1,21 +1,19 @@
 package com.example.mifinanza
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
-import android.widget.Toast
-import android.widget.ArrayAdapter
+import android.widget.*
+import android.content.ContentValues
 import android.text.Editable
 import android.text.TextWatcher
-import android.app.DatePickerDialog
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import java.util.Calendar
 
-class EgresoFragment : Fragment() {
+class DeudasAgregarFragment : Fragment() {
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var spinnerPartida: Spinner
     private lateinit var etFecha: EditText
@@ -24,53 +22,61 @@ class EgresoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_egreso, container, false)
+        val view = inflater.inflate(R.layout.fragment_deudas_agregar, container, false)
 
         dbHelper = DatabaseHelper(requireContext())
         spinnerPartida = view.findViewById(R.id.spinner_partida)
-
-        val etMonto = view.findViewById<EditText>(R.id.et_monto)
-        val etTasa = view.findViewById<EditText>(R.id.et_tasa)
-        val etDescripcion = view.findViewById<EditText>(R.id.et_descripcion)
-        val btnGuardar = view.findViewById<Button>(R.id.btn_guardar)
         etFecha = view.findViewById(R.id.et_fecha)
 
         etFecha.setOnClickListener {
             showDatePicker()
         }
+        val etMonto = view.findViewById<EditText>(R.id.et_monto)
+        val etDescripcion = view.findViewById<EditText>(R.id.et_descripcion)
+        val btnGuardar = view.findViewById<Button>(R.id.btn_guardar)
+        val btnRegresar = view.findViewById<Button>(R.id.btn_regresar)
 
         addTextWatcher(etMonto)
-        addTextWatcher(etTasa)
         loadPartidasEgresos()
 
         btnGuardar.setOnClickListener {
-            guardarEgreso(etMonto, etTasa, etDescripcion)
+            guardarDeuda(etMonto,etDescripcion)
+        }
+
+        btnRegresar.setOnClickListener {
+            findNavController().navigateUp()
         }
 
         return view
     }
-
-    private fun guardarEgreso(etMonto: EditText, etTasa: EditText, etDescripcion: EditText) {
+    private fun guardarDeuda(etMonto: EditText, etDescripcion: EditText){
         val monto = parseFormattedValue(etMonto.text.toString())
-        val tasa = parseFormattedValue(etTasa.text.toString())
         val descripcion = etDescripcion.text.toString()
         val fecha = etFecha.text.toString()
-        val tipo = 0 // Tipo es 0 para egresos
-       // val partida = spinnerPartida.selectedItemId.toInt()
         val partidaSeleccionada = spinnerPartida.selectedItem as Partida
         val partida = partidaSeleccionada.id
-        if (monto != null && tasa != null && fecha.isNotEmpty() && descripcion.isNotEmpty()) {
-            dbHelper.registrarMovimiento((monto * -1), tasa, descripcion, fecha, tipo, partida, ((monto * -1)/tasa))
-            Toast.makeText(requireContext(), "Egreso guardado", Toast.LENGTH_SHORT).show()
+        if (monto != null && partida != null && fecha.isNotEmpty() && descripcion.isNotEmpty()) {
+            dbHelper.guardarDeuda(
+                descripcion,
+                monto,
+                fecha,
+                partida
+            )
+            Toast.makeText(requireContext(), "Deuda registrdas con exito", Toast.LENGTH_SHORT).show()
             etMonto.text.clear()
-            etTasa.text.clear()
             etDescripcion.text.clear()
             etFecha.text.clear()
         } else {
             Toast.makeText(requireContext(), "Por favor, completa todos los campos correctamente", Toast.LENGTH_SHORT).show()
         }
-    }
 
+    }
+    private fun loadPartidasEgresos() {
+        val partidas = dbHelper.loadPartidas(0)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, partidas)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerPartida.adapter = adapter
+    }
     private fun showDatePicker() {
         try {
             val calendar = Calendar.getInstance()
@@ -98,7 +104,6 @@ class EgresoFragment : Fragment() {
             Toast.makeText(requireContext(), "Error al seleccionar la fecha: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
-
     private fun addTextWatcher(editText: EditText) {
         editText.setText("0,00")
         editText.gravity = android.view.Gravity.END
@@ -127,7 +132,6 @@ class EgresoFragment : Fragment() {
             }
         })
     }
-
     private fun parseFormattedValue(value: String): Double? {
         return try {
             val normalized = value.replace(".", "").replace(",", ".")
@@ -137,10 +141,5 @@ class EgresoFragment : Fragment() {
         }
     }
 
-    private fun loadPartidasEgresos() {
-        val partidas = dbHelper.loadPartidas(0)
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, partidas)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerPartida.adapter = adapter
-    }
 }
+

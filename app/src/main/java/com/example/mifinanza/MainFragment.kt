@@ -33,6 +33,7 @@ class MainFragment : Fragment() {
         val tvResumenIngresos: TextView = view.findViewById(R.id.tv_resumen_ingresos)
         val tvResumenEgresos: TextView = view.findViewById(R.id.tv_resumen_egresos)
         val tvPrestamoPendiente: TextView = view.findViewById(R.id.tv_prestamo_pendiente)
+        val tvDisponible: TextView = view.findViewById(R.id.tv_disponibilidad)
 
         val dbHelper = DatabaseHelper(requireContext()) // Inicializa tu DatabaseHelper
 
@@ -44,6 +45,8 @@ class MainFragment : Fragment() {
         tvResumenIngresos.text = "Ingresos: $totalIngresos"
         tvResumenEgresos.text = "Egresos: $totalEgresos"
         tvPrestamoPendiente.text = "Préstamo por Pagar: $montoTotalPrestamos"
+        val m_disp = totalIngresos + totalEgresos
+        tvDisponible.text = "Disponible: $m_disp"
 
         // Dentro de tu Fragment o Activity
         val barChartIngresos = view.findViewById<BarChart>(R.id.barChartIngresos) // Asegúrate de tener un BarChart para ingresos
@@ -117,7 +120,6 @@ class MainFragment : Fragment() {
             partidas[cursorPartidas.getInt(0)] = cursorPartidas.getString(1)
         }
         cursorPartidas.close()
-        println("Las Partidas: $partidas")
         // Obtener datos de ingresos/egresos por partida y mes
         val cursorDatos = db.query(DatabaseHelper.TABLE_NAME, arrayOf(DatabaseHelper.COLUMN_PARTIDA, "SUM(${DatabaseHelper.COLUMN_TOTAL})", "strftime('%m', ${DatabaseHelper.COLUMN_FECHA})", "strftime('%Y', ${DatabaseHelper.COLUMN_FECHA})"), "${DatabaseHelper.COLUMN_TIPO} = ? AND strftime('%m', ${DatabaseHelper.COLUMN_FECHA}) IN (?, ?) AND strftime('%Y', ${DatabaseHelper.COLUMN_FECHA}) IN (?, ?)", arrayOf(tipo.toString(), String.format("%02d", mesActual), String.format("%02d", mesAnterior), anioActual.toString(), anioAnterior.toString()), "${DatabaseHelper.COLUMN_PARTIDA}, strftime('%m', ${DatabaseHelper.COLUMN_FECHA})", null, null)
 
@@ -127,11 +129,16 @@ class MainFragment : Fragment() {
             val mesString = cursorDatos.getString(cursorDatos.getColumnIndexOrThrow("strftime('%m', ${DatabaseHelper.COLUMN_FECHA})"))
             val mes = mesString.toInt() // Convertir mes a Int
             val partidaNombre = partidas[partidaId] ?: "Desconocido"
+            var montoModificado = monto // Crear una copia modificable de monto
+
+            if (montoModificado < 0) {
+                montoModificado *= -1 // Modificar la copia
+            }
 
             if (mes == mesActual) {
-                datos[partidaNombre] = Pair(monto, datos[partidaNombre]?.second ?: 0.0)
+                datos[partidaNombre] = Pair(montoModificado, datos[partidaNombre]?.second ?: 0.0) // Usar el valor modificado
             } else if (mes == mesAnterior) {
-                datos[partidaNombre] = Pair(datos[partidaNombre]?.first ?: 0.0, monto)
+                datos[partidaNombre] = Pair(datos[partidaNombre]?.first ?: 0.0, montoModificado) // Usar el valor modificado
             }
         }
         cursorDatos.close()
@@ -152,24 +159,39 @@ class MainFragment : Fragment() {
             nombresPartidas.add(nombrePartida)
             index++
         }
-        println("Nombres Partidas: $nombresPartidas")
         val dataSetMesActual = BarDataSet(entriesMesActual, "Mes Actual")
         val dataSetMesAnterior = BarDataSet(entriesMesAnterior, "Mes Anterior")
 
         // Personalizar dataSets (colores, etc.)
         dataSetMesActual.color = Color.BLUE
         dataSetMesAnterior.color = Color.RED
+        val groupSpace = 0.1f
+        val barSpace = 0.02f
+        val barWidth = 0.35f
+
+        val groupCount = datos.size // Número de grupos de barras
 
         val barData = BarData(dataSetMesActual, dataSetMesAnterior)
-        barData.barWidth = 0.35f // Ajustar el ancho de las barras
+        barData.barWidth = barWidth // Ajustar el ancho de las barras
 
+        barChart.data = barData
         // Configurar el eje X
         val xAxis = barChart.xAxis
         xAxis.valueFormatter = IndexAxisValueFormatter(nombresPartidas)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.granularity = 1f
         xAxis.setCenterAxisLabels(true)
+        xAxis.labelRotationAngle = -45f // Rota las etiquetas
+        xAxis.textSize = 8f // Ajusta el tamaño de la fuente
 
+        xAxis.axisMinimum = 0f
+        xAxis.axisMaximum = 0f + barChart.barData.getGroupWidth(groupSpace, barSpace) * groupCount
+
+        barChart.groupBars(0f, groupSpace, barSpace) // Agrupa las barras
+        barChart.invalidate()
+
+        //Ajuste de la descripcion
+        barChart.description.textSize = 12f;
         return barData
     }
 }

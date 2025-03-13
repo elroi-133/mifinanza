@@ -22,7 +22,7 @@ class RegistrarPrestamoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_registrar_prestamo, container, false)
+        val view = inflater.inflate(R.layout.fragment_prestamo_registrar, container, false)
 
         dbHelper = DatabaseHelper(requireContext())
         val etPrestamista = view.findViewById<EditText>(R.id.et_prestamista)
@@ -81,9 +81,15 @@ class RegistrarPrestamoFragment : Fragment() {
         fechaPrestamo: String,
         plazoDias: Int
     ) {
-        dbHelper.registrarPrestamo(prestamista, monto, tasaInteres, fechaPrestamo, plazoDias, requireContext())
-        dbHelper.registrarMovimiento((monto*tasa), tasa, StringBuilder("PRESTAMO de ").append(prestamista).toString(), fechaPrestamo, 1, 2,monto)
-        Toast.makeText(requireContext(), "Préstamo registrado", Toast.LENGTH_SHORT).show()
+        val tipo = 1 // Tipo es 1 para ingresos
+        val partida = dbHelper.obtenerIdPartida( "Prestamos", tipo)
+        if (partida != null) {
+            dbHelper.registrarPrestamo(prestamista, monto, tasaInteres, fechaPrestamo, plazoDias, requireContext())
+            dbHelper.registrarMovimiento((monto * tasa), tasa, StringBuilder("PRESTAMO = ").append(prestamista).toString(), fechaPrestamo, tipo, partida, monto)
+            Toast.makeText(requireContext(), "Préstamo registrado con exito", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(requireContext(), "Error: No se encontró la partida 'Prestamos'", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun showDatePicker() {

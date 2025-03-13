@@ -1,50 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/tv_nombre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nombre del Usuario"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/tv_resumen_ingresos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Resumen de Ingresos"
-        android:textSize="18sp"
-        android:paddingTop="10dp" />
-
-    <TextView
-        android:id="@+id/tv_resumen_egresos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Resumen de Egresos"
-        android:textSize="18sp"
-        android:paddingTop="10dp" />
-
-    <TextView
-        android:id="@+id/tv_prestamo_pendiente"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Préstamo por Pagar"
-        android:textSize="18sp"
-        android:paddingTop="10dp" />
-
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/barChartIngresos"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp" />
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        tools:layout_editor_absoluteY="1dp">
 
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/barChartEgresos"
-        android:layout_width="match_parent"
-        android:layout_height="300dp" />
+        <TextView
+            android:id="@+id/tv_nombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre del Usuario"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/tv_disponibilidad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Disponibilidad"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_nombre" />
 
+        <TextView
+            android:id="@+id/tv_resumen_ingresos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Resumen de Ingresos"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_disponibilidad" />
+
+        <TextView
+            android:id="@+id/tv_resumen_egresos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Resumen de Egresos"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_resumen_ingresos" />
+
+        <TextView
+            android:id="@+id/tv_prestamo_pendiente"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Préstamo por Pagar"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_resumen_egresos" />
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChartIngresos"
+            android:layout_width="0dp"
+            android:layout_height="300dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_prestamo_pendiente" />
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChartEgresos"
+            android:layout_width="0dp"
+            android:layout_height="300dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/barChartIngresos" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

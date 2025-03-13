@@ -24,5 +24,9 @@
         android:id="@+id/nav_prestamos"
         android:icon="@drawable/ic_prestamo"
         android:title="Gestionar prestamos" />
+    <item
+        android:id="@+id/nav_deudas"
+        android:icon="@drawable/ic_deuda"
+        android:title="Gestionar deudas" />
 </menu>
 

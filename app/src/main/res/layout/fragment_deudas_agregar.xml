@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -14,7 +15,7 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pago prestamo"
+            android:text="Nueva Deuda"
             android:textSize="24sp"
             android:gravity="center"
             android:layout_gravity="center"
@@ -23,12 +24,27 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Prestamo"
+            android:text="Fecha inicio"
             android:textSize="14sp"
             android:textColor="@android:color/black" />
+        <EditText
+            android:id="@+id/et_fecha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="(YYYY-MM-DD)"
+            android:focusable="false"
+            android:clickable="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Partida"
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
         <Spinner
-            android:id="@+id/spinner_prestamo"
+            android:id="@+id/spinner_partida"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:prompt="@string/select_partida"
@@ -39,10 +55,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Monto"
+            android:text="Monto en divisas"
             android:textSize="14sp"
             android:textColor="@android:color/black" />
-
         <EditText
             android:id="@+id/et_monto"
             android:layout_width="match_parent"
@@ -56,39 +71,18 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tasa BCV"
+            android:text="Descripción y proveedor"
             android:textSize="14sp"
             android:textColor="@android:color/black" />
-
         <EditText
-            android:id="@+id/et_tasa"
+            android:id="@+id/et_descripcion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:gravity="end"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Fecha"
-            android:textSize="14sp"
-            android:textColor="@android:color/black" />
-
-        <EditText
-            android:id="@+id/et_fecha"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="(YYYY-MM-DD)"
-            android:focusable="false"
-            android:clickable="true"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp" />
 
         <Button
-            android:id="@+id/btn_registrar_pago_prestamo"
+            android:id="@+id/btn_guardar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="GUARDAR"
@@ -97,5 +91,15 @@
             android:textColor="@android:color/white"
             android:layout_marginTop="16dp" />
 
+        <Button
+            android:id="@+id/btn_regresar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="REGRESAR"
+            android:textAllCaps="true"
+            android:backgroundTint="@color/gray"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp" />
     </LinearLayout>
 </ScrollView>
+

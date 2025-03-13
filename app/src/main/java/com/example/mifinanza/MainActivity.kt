@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.nav_inicio -> {
                     when (currentDestination) {
+                        R.id.deudasFragment -> navController.navigate(R.id.action_deudasFragment_to_mainFragment)
                         R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_mainFragment)
                         R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_mainFragment)
                         R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_mainFragment)
@@ -54,6 +55,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_ingresos -> {
                     when (currentDestination) {
+                        R.id.deudasFragment -> navController.navigate(R.id.action_deudasFragment_to_ingresoFragment)
                         R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_ingresoFragment)
                         R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_ingresoFragment)
                         R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_ingresoFragment)
@@ -63,6 +65,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_egresos -> {
                     when (currentDestination) {
+                        R.id.deudasFragment -> navController.navigate(R.id.action_deudasFragment_to_egresoFragment)
                         R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_egresoFragment)
                         R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_egresoFragment)
                         R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_egresoFragment)
@@ -72,6 +75,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_partidas -> {
                     when (currentDestination) {
+                        R.id.deudasFragment -> navController.navigate(R.id.action_deudasFragment_to_listaPartidasFragment)
                         R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_listaPartidasFragment)
                         R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_listaPartidasFragment)
                         R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_listaPartidasFragment)
@@ -81,6 +85,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_movimientos -> {
                     when (currentDestination) {
+                        R.id.deudasFragment -> navController.navigate(R.id.action_deudasFragment_to_listaMovimientoFragment)
                         R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_listaMovimientoFragment)
                         R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_listaMovimientoFragment)
                         R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_listaMovimientoFragment)
@@ -90,11 +95,22 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_prestamos -> {
                     when (currentDestination) {
+                        R.id.deudasFragment -> navController.navigate(R.id.action_deudasFragment_to_prestamosFragment)
                         R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_prestamosFragment)
                         R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_prestamosFragment)
                         R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_prestamosFragment)
                         R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_prestamosFragment)
                         R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_prestamosFragment)
+                    }
+                }
+                R.id.nav_deudas -> {
+                    when (currentDestination) {
+                        R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_deudasFragment)
+                        R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_deudasFragment)
+                        R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_deudasFragment)
+                        R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_deudasFragment)
+                        R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_deudasFragment)
+                        R.id.prestamosFragment -> navController.navigate(R.id.action_prestamosFragment_to_deudasFragment)
                     }
                 }
             }
