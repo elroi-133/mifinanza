@@ -1,6 +1,5 @@
 package com.example.mifinanza
 
-import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.os.Bundle
@@ -22,10 +21,23 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.FileOutputStream
 import java.io.InputStream
 
+import android.Manifest
+import android.content.ContentValues
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import java.io.File
+
+
 class ListaMovimientoFragment : Fragment() {
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var listView: ListView
     private lateinit var adapter: SimpleAdapter
+    private lateinit var registros: MutableList<Map<String, String>>
+    private val REQUEST_WRITE_EXTERNAL_STORAGE = 1
 
     private val importFileLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let { importRegistros(it) }
@@ -43,21 +55,29 @@ class ListaMovimientoFragment : Fragment() {
         loadRegistros()
 
         listView.setOnItemLongClickListener { parent, _, position, _ ->
-            val selectedItem = parent.getItemAtPosition(position) as Map<String, String>
-            val registroId = selectedItem["id"]?.toInt()
-            val registroDescripcion = selectedItem["descripcion"]
+            if (position >= 0 && position < registros.size) {
+                val selectedItem = registros[position]
+                val registroId = selectedItem["id"]?.toInt()
+                val registroDescripcion = selectedItem["descripcion"]
 
-            AlertDialog.Builder(requireContext())
-                .setTitle("Editar/Eliminar Registro")
-                .setMessage("¿Qué deseas hacer con el registro '$registroDescripcion'?")
-                .setPositiveButton("Editar") { _, _ ->
-                    showEditDialog(registroId, selectedItem)
+                if (registroId != null && registroDescripcion != null) {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Editar/Eliminar Registro")
+                        .setMessage("¿Qué deseas hacer con el registro '$registroDescripcion'?")
+                        .setPositiveButton("Editar") { _, _ ->
+                            showEditDialog(registroId, selectedItem)
+                        }
+                        .setNegativeButton("Eliminar") { _, _ ->
+                            deleteRegistro(registroId)
+                        }
+                        .setNeutralButton("Cancelar", null)
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "Error: 'id' o 'descripcion' son nulos.", Toast.LENGTH_SHORT).show()
                 }
-                .setNegativeButton("Eliminar") { _, _ ->
-                    deleteRegistro(registroId)
-                }
-                .setNeutralButton("Cancelar", null)
-                .show()
+            } else {
+                Toast.makeText(requireContext(), "Error: selectedItem es nulo.", Toast.LENGTH_SHORT).show()
+            }
 
             true
         }
@@ -76,7 +96,7 @@ class ListaMovimientoFragment : Fragment() {
     private fun loadRegistros() {
         val db = dbHelper.readableDatabase
         val cursor = db.query(DatabaseHelper.TABLE_NAME, null, null, null, null, null, "${DatabaseHelper.COLUMN_FECHA} DESC")
-        val registros = mutableListOf<Map<String, String>>()
+        registros = mutableListOf()
         while (cursor.moveToNext()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID)).toString()
             val monto = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_MONTO)).toString()
@@ -85,7 +105,8 @@ class ListaMovimientoFragment : Fragment() {
             val fecha = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_FECHA))
             val tipo = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TIPO)).toString()
             val partida = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA)).toString()
-            registros.add(mapOf("id" to id, "monto" to monto, "tasa" to tasa, "descripcion" to descripcion, "fecha" to fecha, "tipo" to tipo, "partida" to partida))
+            val total = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TOTAL)).toString()
+            registros.add(mapOf("id" to id, "monto" to monto, "tasa" to tasa, "descripcion" to descripcion, "fecha" to fecha, "tipo" to tipo, "partida" to partida, "total" to total))
         }
         cursor.close()
         db.close()
@@ -97,6 +118,8 @@ class ListaMovimientoFragment : Fragment() {
             mapOf(
                 "registroConcatenado" to "Descripción: ${registro["descripcion"]}\n" +
                         "Monto: ${registro["monto"]}\n" +
+                        "Tasa: ${registro["tasa"]}\n" +
+                        "Divisas: ${registro["total"]}\n" +
                         "Fecha: ${registro["fecha"]}\n" +
                         "Tipo: ${registro["tipo"]}\n" +
                         "Partida: ${registro["partida"]}"
@@ -113,6 +136,13 @@ class ListaMovimientoFragment : Fragment() {
         listView.adapter = adapter
     }
     private fun exportarRegistros() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_WRITE_EXTERNAL_STORAGE)
+                return
+            }
+        }
+
         val db = dbHelper.readableDatabase
         val cursor = db.query(DatabaseHelper.TABLE_NAME, null, null, null, null, null, null)
 
@@ -142,13 +172,42 @@ class ListaMovimientoFragment : Fragment() {
         cursor.close()
         db.close()
 
-        val filePath = requireContext().getExternalFilesDir(null).toString() + "/registros_finanzas.xlsx"
-        val fileOutputStream = FileOutputStream(filePath)
-        workbook.write(fileOutputStream)
-        fileOutputStream.close()
+        val fileName = "registros_finanzas.xlsx"
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                put(MediaStore.MediaColumns.MIME_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+            }
+            val uri = requireContext().contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+            if (uri != null) {
+                val outputStream = requireContext().contentResolver.openOutputStream(uri)
+                if (outputStream != null) {
+                    workbook.write(outputStream)
+                    outputStream.close()
+                }
+            }
+        } else {
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val filePath = File(downloadsDir, fileName).absolutePath
+            val fileOutputStream = FileOutputStream(filePath)
+            workbook.write(fileOutputStream)
+            fileOutputStream.close()
+        }
         workbook.close()
 
-        Toast.makeText(requireContext(), "Registros exportados a $filePath", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Registros exportados a Descargas/$fileName", Toast.LENGTH_SHORT).show()
+    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                exportarRegistros()
+            } else {
+                Toast.makeText(requireContext(), "Permiso de almacenamiento denegado", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun showEditDialog(registroId: Int?, registro: Map<String, String>) {

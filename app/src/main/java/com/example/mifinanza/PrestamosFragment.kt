@@ -53,32 +53,20 @@ class PrestamosFragment : Fragment() {
     }
 
     private fun mostrarOpcionesPrestamo(prestamoId: Int) {
-        val opciones = arrayOf("Eliminar", "Editar", "Registrar Pago")
+        val opciones = arrayOf("Eliminar", "Registrar Pago")
         AlertDialog.Builder(requireContext())
             .setTitle("Opciones")
             .setItems(opciones) { _, which ->
                 when (which) {
                     0 -> {
-                        // Lógica para eliminar el registro en la posición 'position'
                         eliminarPrestamo(prestamoId)
                     }
                     1 -> {
-                        // Lógica para editar el registro en la posición 'position'
-                        mostrarFragmentEditar(prestamoId)
-                    }
-                    2 -> {
-                        // Lógica para registrar el pago del registro en la posición 'position'
                         mostrarFragmentRegistrarPago(prestamoId)
                     }
                 }
             }
             .show()
-    }
-
-    private fun mostrarFragmentEditar(prestamoId: Int) {
-        //findNavController().navigate(
-          //  PrestamosFragmentDirections.actionPrestamosFragmentToPrestamoEditarFragment(prestamoId)
-       // )
     }
 
     private fun mostrarFragmentRegistrarPago(prestamoId: Int) {
@@ -95,8 +83,9 @@ class PrestamosFragment : Fragment() {
             Toast.makeText(requireContext(), "No se puede eliminar el préstamo (tiene pagos asociados)", Toast.LENGTH_SHORT).show()
         }
     }
+
     private fun cargarPrestamos() {
-        val prestamos = dbHelper.obtenerTodosLosPrestamos()
+        val prestamos = dbHelper.obtenerPrestamosActivos()
         adapter.clear()
         adapter.addAll(prestamos)
     }

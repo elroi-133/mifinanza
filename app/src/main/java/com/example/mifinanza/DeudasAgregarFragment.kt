@@ -62,7 +62,7 @@ class DeudasAgregarFragment : Fragment() {
                 fecha,
                 partida
             )
-            Toast.makeText(requireContext(), "Deuda registrdas con exito", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Deuda registrada con exito", Toast.LENGTH_SHORT).show()
             etMonto.text.clear()
             etDescripcion.text.clear()
             etFecha.text.clear()
@@ -142,4 +142,3 @@ class DeudasAgregarFragment : Fragment() {
     }
 
 }
-

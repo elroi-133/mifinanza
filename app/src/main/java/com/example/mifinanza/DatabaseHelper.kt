@@ -90,6 +90,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 "('Comision_Banco', 0), " +
                 "('Ropa y Calzado', 0)"
         db.execSQL(insertPartidas)
+
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -101,7 +102,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     companion object {
-        private const val DATABASE_VERSION = 5 // Incrementa la versión de la base de datos
+        private const val DATABASE_VERSION = 10 // Incrementa la versión de la base de datos
         private const val DATABASE_NAME = "finanzas.db"
 
         const val TABLE_NAME = "ingresos_egresos"
@@ -153,24 +154,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.insert(TABLE_NAME, null, values)
         db.close()
     }
-    fun actualizarMovimiento(id: Int,monto: Double,tasa: Double,descripcion: String,fecha: String,tipo: Int,partidaId: Int,montoTotal: Double): Int {
-        val db = writableDatabase
-        val values = ContentValues().apply {
-            put(COLUMN_MONTO, monto)
-            put(COLUMN_TASA, tasa)
-            put(COLUMN_DESCRIPCION, descripcion)
-            put(COLUMN_FECHA, fecha)
-            put(COLUMN_TIPO, tipo)
-            put(COLUMN_PARTIDA, partidaId)
-            put(COLUMN_TOTAL, montoTotal)
-        }
-        return db.update(
-            TABLE_NAME,
-            values,
-            "$COLUMN_ID = ?",
-            arrayOf(id.toString())
-        )
-    }
+
     fun eliminarMovimiento(id: Int): Int {
         val db = writableDatabase
         return db.delete(
@@ -251,28 +235,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             fechaVencimiento,
             pendingIntent
         )
-    }
-    fun obtenerTodosLosPrestamos(): List<String> {
-        val db = readableDatabase
-        val prestamos = mutableListOf<String>()
-
-        val cursor = db.query(
-            TABLE_PRESTAMOS,
-            arrayOf(COLUMN_PRESTAMO_ID, COLUMN_PRESTAMISTA, COLUMN_MONTO_PRESTAMO, COLUMN_ESTADO),
-            null, null, null, null, null
-        )
-
-        while (cursor.moveToNext()) {
-            val id = cursor.getInt(0)
-            val prestamista = cursor.getString(1)
-            val monto = cursor.getDouble(2)
-            val estado = cursor.getString(3)
-            prestamos.add("ID: $id - $prestamista - Monto: $monto - Estado: $estado")
-        }
-        cursor.close()
-        db.close()
-
-        return prestamos
     }
     fun eliminarPrestamo(id: Int): Boolean {
         val db = writableDatabase
@@ -447,7 +409,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             arrayOf(id.toString())
         )
     }
-    fun eliminarDeuda(db: SQLiteDatabase, id: Int): Boolean {
+    fun eliminarDeuda(id: Int): Boolean {
         val db = readableDatabase
         // Verificar si la deuda tiene pagos asociados
 
@@ -475,5 +437,43 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
 
         return filasEliminadas > 0
+    }
+    fun actualizarEstadoDeuda(idDeuda: Int, montoAbonado: Double) {
+        val db = writableDatabase
+        val cursor = db.query(
+            TABLE_DEUDAS,
+            arrayOf(COLUMN_MONTO_DEUDA, COLUMN_DEUDA_ABONO),
+            "$COLUMN_DEUDA_ID = ?",
+            arrayOf(idDeuda.toString()),
+            null,
+            null,
+            null
+        )
+
+        if (cursor.moveToFirst()) {
+            val montoTotal = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_MONTO_DEUDA))
+            val abonoActual = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_DEUDA_ABONO))
+
+            if (montoAbonado + abonoActual >= montoTotal) {
+                // La deuda está pagada
+                val values = ContentValues().apply {
+                    put(COLUMN_ESTADO, "Pagado")
+                    put(COLUMN_DEUDA_ABONO, montoTotal)
+                    put(COLUMN_DEUDA_SALDO_PENDIENTE, 0.0)
+                }
+                db.update(TABLE_DEUDAS, values, "$COLUMN_DEUDA_ID = ?", arrayOf(idDeuda.toString()))
+            } else {
+                // La deuda aún no está pagada
+                val nuevoAbono = abonoActual + montoAbonado
+                val nuevoSaldo = montoTotal - nuevoAbono
+                val values = ContentValues().apply {
+                    put(COLUMN_DEUDA_ABONO, nuevoAbono)
+                    put(COLUMN_DEUDA_SALDO_PENDIENTE, nuevoSaldo)
+                }
+                db.update(TABLE_DEUDAS, values, "$COLUMN_DEUDA_ID = ?", arrayOf(idDeuda.toString()))
+            }
+        }
+        cursor.close()
+        db.close()
     }
 }

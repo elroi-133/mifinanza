@@ -34,17 +34,19 @@ class MainFragment : Fragment() {
         val tvResumenEgresos: TextView = view.findViewById(R.id.tv_resumen_egresos)
         val tvPrestamoPendiente: TextView = view.findViewById(R.id.tv_prestamo_pendiente)
         val tvDisponible: TextView = view.findViewById(R.id.tv_disponibilidad)
-
+        val tvDeudaPendiente: TextView = view.findViewById(R.id.tv_deuda_pendiente)
         val dbHelper = DatabaseHelper(requireContext()) // Inicializa tu DatabaseHelper
 
         val totalIngresos = calcularTotalIngresos(dbHelper)
         val totalEgresos = calcularTotalEgresos(dbHelper)
         val montoTotalPrestamos = calcularMontoTotalPrestamos(dbHelper)
+        val montoTotalDeuda = calcularTotalDeudaPendiente(dbHelper)
 
         tvNombre.text = "RESUMEN DE MIS FINANZAS"
         tvResumenIngresos.text = "Ingresos: $totalIngresos"
         tvResumenEgresos.text = "Egresos: $totalEgresos"
         tvPrestamoPendiente.text = "Préstamo por Pagar: $montoTotalPrestamos"
+        tvDeudaPendiente.text = "Deuda por Pagar: $montoTotalDeuda"
         val m_disp = totalIngresos + totalEgresos
         tvDisponible.text = "Disponible: $m_disp"
 
@@ -75,9 +77,27 @@ class MainFragment : Fragment() {
         barChartEgresos.invalidate()
         return view
     }
+    fun redondearADosDecimales(numero: Double): Double {
+        return String.format("%.2f", numero).toDouble()
+    }
+    fun calcularTotalDeudaPendiente(dbHelper: DatabaseHelper): Double {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery("SELECT ROUND(SUM(${DatabaseHelper.COLUMN_DEUDA_SALDO_PENDIENTE}),2) FROM ${DatabaseHelper.TABLE_DEUDAS}", null)
+
+        var totalPendiente = 0.0
+        if (cursor.moveToFirst()) {
+            if (!cursor.isNull(0)) {
+                totalPendiente = cursor.getDouble(0)
+            }
+        }
+        cursor.close()
+        db.close()
+
+        return totalPendiente
+    }
     fun calcularMontoTotalPrestamos(dbHelper: DatabaseHelper): Double {
         val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery("SELECT SUM(${DatabaseHelper.COLUMN_MONTO_PRESTAMO}) FROM ${DatabaseHelper.TABLE_PRESTAMOS} WHERE ${DatabaseHelper.COLUMN_ESTADO} = 'Activo'", null)
+        val cursor = db.rawQuery("SELECT ROUND(SUM(${DatabaseHelper.COLUMN_MONTO_PRESTAMO}),2) FROM ${DatabaseHelper.TABLE_PRESTAMOS} WHERE ${DatabaseHelper.COLUMN_ESTADO} = 'Activo'", null)
         var totalPrestamos = 0.0
         if (cursor.moveToFirst()) {
             totalPrestamos = cursor.getDouble(0)
@@ -88,7 +108,7 @@ class MainFragment : Fragment() {
     }
     fun calcularTotalEgresos(dbHelper: DatabaseHelper): Double {
         val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery("SELECT SUM(${DatabaseHelper.COLUMN_TOTAL}) FROM ${DatabaseHelper.TABLE_NAME} WHERE ${DatabaseHelper.COLUMN_TIPO} = 0", null)
+        val cursor = db.rawQuery("SELECT ROUND(SUM(${DatabaseHelper.COLUMN_TOTAL}),2) FROM ${DatabaseHelper.TABLE_NAME} WHERE ${DatabaseHelper.COLUMN_TIPO} = 0", null)
         var totalEgresos = 0.0
         if (cursor.moveToFirst()) {
             totalEgresos = cursor.getDouble(0)
@@ -99,7 +119,7 @@ class MainFragment : Fragment() {
     }
     fun calcularTotalIngresos(dbHelper: DatabaseHelper): Double {
         val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery("SELECT SUM(${DatabaseHelper.COLUMN_TOTAL}) FROM ${DatabaseHelper.TABLE_NAME} WHERE ${DatabaseHelper.COLUMN_TIPO} = 1", null)
+        val cursor = db.rawQuery("SELECT ROUND(SUM(${DatabaseHelper.COLUMN_TOTAL}),2) FROM ${DatabaseHelper.TABLE_NAME} WHERE ${DatabaseHelper.COLUMN_TIPO} = 1", null)
         var totalIngresos = 0.0
         if (cursor.moveToFirst()) {
             totalIngresos = cursor.getDouble(0)

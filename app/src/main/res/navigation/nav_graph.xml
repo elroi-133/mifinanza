@@ -215,10 +215,25 @@
         <action
             android:id="@+id/action_deudasFragment_to_deudasAgregarFragment"
             app:destination="@id/deudasAgregarFragment" />
+        <action
+            android:id="@+id/action_deudasFragment_to_deudasRegistrarPagoFragment"
+            app:destination="@id/deudaRegistrarPagoFragment" />
     </fragment>
     <fragment
         android:id="@+id/deudasAgregarFragment"
         android:name="com.example.mifinanza.DeudasAgregarFragment"
         android:label="DeudasAgregarFragment"
         tools:layout="@layout/fragment_deudas_agregar" />
+    <fragment
+        android:id="@+id/deudaRegistrarPagoFragment"
+        android:name="com.example.mifinanza.DeudaRegistrarPagoFragment"
+        android:label="DeudaRegistrarPagoFragment"
+        tools:layout="@layout/fragment_deuda_registrar_pago" >
+        <action
+            android:id="@+id/action_deudaRegistrarPagoFragment_to_deudasFragment"
+            app:destination="@id/deudasFragment" />
+        <argument
+            android:name="deudaId"
+            app:argType="integer" />
+    </fragment>
 </navigation>
