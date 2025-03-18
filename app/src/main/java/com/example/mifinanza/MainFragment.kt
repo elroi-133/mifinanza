@@ -13,11 +13,18 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet // Importar IBarDataSet
+
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import java.util.Calendar
+import kotlin.math.roundToInt
+import kotlin.math.pow
 
 class MainFragment : Fragment() {
 
@@ -48,9 +55,12 @@ class MainFragment : Fragment() {
         tvPrestamoPendiente.text = "Préstamo por Pagar: $montoTotalPrestamos"
         tvDeudaPendiente.text = "Deuda por Pagar: $montoTotalDeuda"
         val m_disp = totalIngresos + totalEgresos
-        tvDisponible.text = "Disponible: $m_disp"
+        val m_total = m_disp.roundTo(2)
+       tvDisponible.text = "Disponible: $m_total"
 
-        // Dentro de tu Fragment o Activity
+        // declaracion de la graficas
+        val horizontalBarChart: HorizontalBarChart = view.findViewById(R.id.horizontalBarChart)
+
         val barChartIngresos = view.findViewById<BarChart>(R.id.barChartIngresos) // Asegúrate de tener un BarChart para ingresos
         val barChartEgresos = view.findViewById<BarChart>(R.id.barChartEgresos) // Asegúrate de tener un BarChart para egresos
 
@@ -61,24 +71,93 @@ class MainFragment : Fragment() {
         val mesAnterior = calendario.get(Calendar.MONTH) + 1
         val anioAnterior = calendario.get(Calendar.YEAR)
 
+//grafica resumen
+        val data = listOf(
+            Pair("Ingresos", totalIngresos.toFloat()),
+            Pair("Egresos", totalEgresos.toFloat()*-1),
+            Pair("Deudas", montoTotalDeuda.toFloat()),
+            Pair("Prestamos", montoTotalPrestamos.toFloat())
+        )
+
+        configurarGrafico(horizontalBarChart, data)
+
 // Gráfico de ingresos
         val datosIngresos = obtenerDatosGrafica(dbHelper, 1, mesActual, anioActual, mesAnterior, anioAnterior)
-        println("Datos Ingresos: $datosIngresos")
         val barDataIngresos = prepararDatosGraficaBarras(datosIngresos, barChartIngresos)
         barChartIngresos.data = barDataIngresos
-        barChartIngresos.groupBars(-0.5f, 0.35f, 0f) // Agrupar las barras
+        barChartIngresos.description.text = "Ingresos"
+        barChartIngresos.description.textColor = Color.BLUE
+        barChartIngresos.description.textSize = 12f
+        barChartIngresos.groupBars(-0.5f, 0.35f, 0f)
         barChartIngresos.invalidate()
 // Gráfico de egresos
         val datosEgresos = obtenerDatosGrafica(dbHelper, 0, mesActual, anioActual, mesAnterior, anioAnterior)
-        println("Datos Egresos: $datosEgresos")
-        val barDataEgresos = prepararDatosGraficaBarras(datosEgresos, barChartEgresos) // Pasa barChartEgresos
+        val barDataEgresos = prepararDatosGraficaBarras(datosEgresos, barChartEgresos)
         barChartEgresos.data = barDataEgresos
-        barChartEgresos.groupBars(-0.5f, 0.35f, 0f) // Agrupar las barras
+        barChartEgresos.description.text = "Egresos"
+        barChartEgresos.description.textColor = Color.BLUE
+        barChartEgresos.description.textSize = 12f
+        barChartEgresos.groupBars(-0.5f, 0.35f, 0f)
         barChartEgresos.invalidate()
         return view
     }
+    fun Double.roundTo(decimals: Int): Double {
+        val factor = 10.0.pow(decimals)
+        return (this * factor).roundToInt() / factor
+    }
     fun redondearADosDecimales(numero: Double): Double {
         return String.format("%.2f", numero).toDouble()
+    }
+    private fun configurarGrafico(chart: HorizontalBarChart, data: List<Pair<String, Float>>) {
+        val entries = ArrayList<BarEntry>()
+        val labels = ArrayList<String>()
+
+        val ordenDeseado = listOf("Ingresos", "Egresos", "Deudas", "Prestamos")
+        val datosOrdenados = ordenDeseado.map { label ->
+            data.find { it.first == label } ?: Pair(label, 0f)
+        }
+        val dataSets = ArrayList<BarDataSet>()
+        datosOrdenados.forEachIndexed { index, pair ->
+            entries.add(BarEntry(index.toFloat(), pair.second))
+            labels.add(pair.first)
+
+            // Crear un BarDataSet separado para cada categoría
+            val dataSet = BarDataSet(listOf(BarEntry(index.toFloat(), pair.second)), pair.first) // Usar el nombre de la categoría como etiqueta
+            dataSet.color = when (pair.first) {
+                "Ingresos" -> Color.GREEN
+                "Egresos" -> Color.RED
+                "Deudas" -> Color.BLUE
+                "Prestamos" -> Color.YELLOW
+                else -> Color.GRAY
+            }
+
+            dataSets.add(dataSet)
+        }
+        val barData = BarData(dataSets as List<IBarDataSet>)
+        barData.barWidth = 0.3f
+        chart.data = barData
+
+        chart.description.isEnabled = false
+        chart.animateY(1000)
+        val legend = chart.legend
+        legend.isEnabled = true
+        legend.verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
+        legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+        legend.orientation = Legend.LegendOrientation.HORIZONTAL
+        legend.setDrawInside(false)
+
+        chart.axisLeft.valueFormatter = object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                val index = value.toInt()
+                if (index >= 0 && index < labels.size) {
+                    return labels[index]
+                } else {
+                    return ""
+                }
+            }
+        }
+
+        chart.invalidate()
     }
     fun calcularTotalDeudaPendiente(dbHelper: DatabaseHelper): Double {
         val db = dbHelper.readableDatabase

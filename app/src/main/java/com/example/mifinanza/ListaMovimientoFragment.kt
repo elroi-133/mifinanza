@@ -95,18 +95,31 @@ class ListaMovimientoFragment : Fragment() {
 
     private fun loadRegistros() {
         val db = dbHelper.readableDatabase
-        val cursor = db.query(DatabaseHelper.TABLE_NAME, null, null, null, null, null, "${DatabaseHelper.COLUMN_FECHA} DESC")
+        val cursor = db.rawQuery("SELECT *, ROUND(${DatabaseHelper.COLUMN_TOTAL}, 2) AS rounded_total FROM ${DatabaseHelper.TABLE_NAME} ORDER BY ${DatabaseHelper.COLUMN_FECHA} DESC, ${DatabaseHelper.COLUMN_ID} DESC", null)
+        //val cursor = db.query(DatabaseHelper.TABLE_NAME, null, null, null, null, null, "${DatabaseHelper.COLUMN_FECHA} DESC, ${DatabaseHelper.COLUMN_ID} DESC")
         registros = mutableListOf()
+        val partidasMap = dbHelper.obtenerTodasLasPartidas()
         while (cursor.moveToNext()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID)).toString()
             val monto = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_MONTO)).toString()
             val tasa = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TASA)).toString()
             val descripcion = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESCRIPCION))
             val fecha = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_FECHA))
-            val tipo = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TIPO)).toString()
-            val partida = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA)).toString()
-            val total = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TOTAL)).toString()
-            registros.add(mapOf("id" to id, "monto" to monto, "tasa" to tasa, "descripcion" to descripcion, "fecha" to fecha, "tipo" to tipo, "partida" to partida, "total" to total))
+            val tipoInt = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TIPO))
+            val partidaId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA))
+            //val total = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TOTAL)).toString()
+            val total = cursor.getDouble(cursor.getColumnIndexOrThrow("rounded_total")).toString() // Obtener el total redondeado
+
+            val partidaNombre = partidasMap[partidaId] ?: "Desconocido"
+
+            val tipoTexto = when (tipoInt) {
+                1 -> "Ingreso"
+                0 -> "Egreso"
+                2 -> "Prestamo"
+                else -> "Desconocido"
+            }
+
+            registros.add(mapOf("id" to id, "monto" to monto, "tasa" to tasa, "descripcion" to descripcion, "fecha" to fecha, "tipo" to tipoTexto, "partida" to partidaNombre, "total" to total))
         }
         cursor.close()
         db.close()

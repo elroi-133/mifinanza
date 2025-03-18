@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
                         R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_mainFragment)
                         R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_mainFragment)
                         R.id.prestamosFragment -> navController.navigate(R.id.action_prestamosFragment_to_mainFragment)
+                        R.id.acercaDeFragment -> navController.navigate(R.id.action_acercaDeFragment_to_mainFragment)
                     }
                 }
                 R.id.nav_ingresos -> {
@@ -61,6 +62,7 @@ class MainActivity : AppCompatActivity() {
                         R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_ingresoFragment)
                         R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_ingresoFragment)
                         R.id.prestamosFragment -> navController.navigate(R.id.action_prestamosFragment_to_ingresoFragment)
+                        R.id.acercaDeFragment -> navController.navigate(R.id.action_acercaDeFragment_to_ingresoFragment)
                     }
                 }
                 R.id.nav_egresos -> {
@@ -70,7 +72,8 @@ class MainActivity : AppCompatActivity() {
                         R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_egresoFragment)
                         R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_egresoFragment)
                         R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_egresoFragment)
-                        R.id.prestamosFragment -> navController.navigate(R.id.action_prestamosFragment_to_egresoFragment)// Añadido
+                        R.id.prestamosFragment -> navController.navigate(R.id.action_prestamosFragment_to_egresoFragment)
+                        R.id.acercaDeFragment -> navController.navigate(R.id.action_acercaDeFragment_to_egresoFragment)
                     }
                 }
                 R.id.nav_partidas -> {
@@ -81,6 +84,7 @@ class MainActivity : AppCompatActivity() {
                         R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_listaPartidasFragment)
                         R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_listaPartidasFragment)
                         R.id.prestamosFragment -> navController.navigate(R.id.action_prestamosFragment_to_listaPartidasFragment)
+                        R.id.acercaDeFragment -> navController.navigate(R.id.action_acercaDeFragment_to_listaPartidasFragment)
                     }
                 }
                 R.id.nav_movimientos -> {
@@ -91,6 +95,7 @@ class MainActivity : AppCompatActivity() {
                         R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_listaMovimientoFragment)
                         R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_listaMovimientoFragment)
                         R.id.prestamosFragment -> navController.navigate(R.id.action_prestamosFragment_to_listaMovimientoFragment)
+                        R.id.acercaDeFragment -> navController.navigate(R.id.action_acercaDeFragment_to_listaMovimientoFragment)
                     }
                 }
                 R.id.nav_prestamos -> {
@@ -101,6 +106,7 @@ class MainActivity : AppCompatActivity() {
                         R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_prestamosFragment)
                         R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_prestamosFragment)
                         R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_prestamosFragment)
+                        R.id.acercaDeFragment -> navController.navigate(R.id.action_acercaDeFragment_to_prestamosFragment)
                     }
                 }
                 R.id.nav_deudas -> {
@@ -111,6 +117,18 @@ class MainActivity : AppCompatActivity() {
                         R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_deudasFragment)
                         R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_deudasFragment)
                         R.id.prestamosFragment -> navController.navigate(R.id.action_prestamosFragment_to_deudasFragment)
+                        R.id.acercaDeFragment -> navController.navigate(R.id.action_acercaDeFragment_to_deudasFragment)
+                    }
+                }
+                R.id.action_acerca_de -> {
+                    when (currentDestination) {
+                        R.id.mainFragment -> navController.navigate(R.id.action_mainFragment_to_acercaDeFragment)
+                        R.id.ingresoFragment -> navController.navigate(R.id.action_ingresoFragment_to_acercaDeFragment)
+                        R.id.egresoFragment -> navController.navigate(R.id.action_egresoFragment_to_acercaDeFragment)
+                        R.id.listaPartidasFragment -> navController.navigate(R.id.action_listaPartidasFragment_to_acercaDeFragment)
+                        R.id.listaMovimientoFragment -> navController.navigate(R.id.action_listaMovimientoFragment_to_acercaDeFragment)
+                        R.id.prestamosFragment -> navController.navigate(R.id.action_prestamosFragment_to_acercaDeFragment)
+                        R.id.deudasFragment -> navController.navigate(R.id.action_deudasFragment_to_acercaDeFragment)
                     }
                 }
             }

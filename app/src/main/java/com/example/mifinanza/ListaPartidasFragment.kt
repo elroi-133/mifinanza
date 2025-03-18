@@ -42,7 +42,13 @@ class ListaPartidasFragment : Fragment() {
             val selectedItem = parent.getItemAtPosition(position) as Map<String, String>
             val partidaId = selectedItem["id"]?.toInt()
             val partidaNombre = selectedItem["nombre"]
-            val partidaTipo = selectedItem["tipo"]?.toInt()
+            val partidaTipo = when (selectedItem["tipo"]) {
+                "Egreso" -> 0
+                "Ingreso" -> 1
+               "Préstamo" -> 2
+                else -> -1
+            }
+            
 
             AlertDialog.Builder(requireContext())
                 .setTitle("Editar/Eliminar Partida")

@@ -26,6 +26,9 @@
         <action
             android:id="@+id/action_mainFragment_to_deudasFragment"
             app:destination="@id/deudasFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_acercaDeFragment"
+            app:destination="@id/acercaDeFragment" />
     </fragment>
 
     <fragment
@@ -51,6 +54,9 @@
         <action
             android:id="@+id/action_ingresoFragment_to_deudasFragment"
             app:destination="@id/deudasFragment" />
+        <action
+            android:id="@+id/action_ingresoFragment_to_acercaDeFragment"
+            app:destination="@id/acercaDeFragment" />
     </fragment>
 
     <fragment
@@ -76,6 +82,9 @@
         <action
             android:id="@+id/action_egresoFragment_to_deudasFragment"
             app:destination="@id/deudasFragment" />
+        <action
+            android:id="@+id/action_egresoFragment_to_acercaDeFragment"
+            app:destination="@id/acercaDeFragment" />
     </fragment>
 
     <fragment
@@ -104,6 +113,9 @@
         <action
             android:id="@+id/action_listaPartidasFragment_to_deudasFragment"
             app:destination="@id/deudasFragment" />
+        <action
+            android:id="@+id/action_listaPartidasFragment_to_acercaDeFragment"
+            app:destination="@id/acercaDeFragment" />
     </fragment>
 
     <fragment
@@ -135,7 +147,9 @@
         <action
             android:id="@+id/action_listaMovimientoFragment_to_deudasFragment"
             app:destination="@id/deudasFragment" />
-
+        <action
+            android:id="@+id/action_listaMovimientoFragment_to_acercaDeFragment"
+            app:destination="@id/acercaDeFragment" />
     </fragment>
 
     <fragment
@@ -167,6 +181,9 @@
         <action
             android:id="@+id/action_prestamosFragment_to_prestamoRegistrarPagoFragment"
             app:destination="@id/prestamoRegistrarPagoFragment" />
+        <action
+            android:id="@+id/action_prestamosFragment_to_acercaDeFragment"
+            app:destination="@id/acercaDeFragment" />
     </fragment>
 
     <fragment
@@ -218,6 +235,9 @@
         <action
             android:id="@+id/action_deudasFragment_to_deudasRegistrarPagoFragment"
             app:destination="@id/deudaRegistrarPagoFragment" />
+        <action
+            android:id="@+id/action_deudasFragment_to_acercaDeFragment"
+            app:destination="@id/acercaDeFragment" />
     </fragment>
     <fragment
         android:id="@+id/deudasAgregarFragment"
@@ -235,5 +255,35 @@
         <argument
             android:name="deudaId"
             app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/acercaDeFragment"
+        android:name="com.example.mifinanza.AcercaDeFragment"
+        android:label="AcercaDeFragment"
+        tools:layout="@layout/fragment_acerca_de" >
+        <action
+            android:id="@+id/action_acercaDeFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_acercaDeFragment_to_ingresoFragment"
+            app:destination="@id/ingresoFragment" />
+        <action
+            android:id="@+id/action_acercaDeFragment_to_egresoFragment"
+            app:destination="@id/egresoFragment" />
+        <action
+            android:id="@+id/action_acercaDeFragment_to_listaPartidasFragment"
+            app:destination="@id/listaPartidasFragment" />
+        <action
+            android:id="@+id/action_acercaDeFragment_to_listaMovimientoFragment"
+            app:destination="@id/listaMovimientoFragment" />
+        <action
+            android:id="@+id/action_acercaDeFragment_to_prestamosFragment"
+            app:destination="@id/prestamosFragment" />
+        <action
+            android:id="@+id/action_acercaDeFragment_to_deudasFragment"
+            app:destination="@id/deudasAgregarFragment" />
+        <action
+            android:id="@+id/action_acercaDeFragment_to_deudasRegistrarPagoFragment"
+            app:destination="@id/deudaRegistrarPagoFragment" />
     </fragment>
 </navigation>

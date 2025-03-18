@@ -6,6 +6,7 @@ import android.content.Context
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.widget.ArrayAdapter
@@ -351,6 +352,33 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         db.close()
         return partidas
+    }
+    fun obtenerTodasLasPartidas(): Map<Int, String> {
+        val db = readableDatabase
+        val partidasMap = mutableMapOf<Int, String>()
+        var cursor: Cursor? = null // Declarar cursor como nullable
+
+        try {
+            cursor = db.query(
+                DatabaseHelper.TABLE_PARTIDAS,
+                arrayOf(DatabaseHelper.COLUMN_PARTIDA_ID, DatabaseHelper.COLUMN_PARTIDA_NOMBRE),
+                null,
+                null,
+                null,
+                null,
+                null
+            )
+
+            while (cursor?.moveToNext() == true) { // Usar cursor?.moveToNext()
+                val partidaId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA_ID))
+                val partidaNombre = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARTIDA_NOMBRE))
+                partidasMap[partidaId] = partidaNombre
+            }
+        } finally {
+            cursor?.close() // Cerrar el cursor en el bloque finally
+        }
+
+        return partidasMap
     }
 
     //********************************DEUDAS****************************************
